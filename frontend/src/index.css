@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-list-item {
+    @apply text-stone-800 text-lg font-semibold transition-colors duration-200 hover:text-stone-400
+}
+
+.nav-list-icon {
+    @apply w-6 text-slate-100
+}
