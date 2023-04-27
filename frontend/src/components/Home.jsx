@@ -1,6 +1,14 @@
 import React from "react";
+import { useContext, useEffect } from "react";
+import { context } from "../context";
 
 function Home() {
+  const globalVal = useContext(context);
+
+  useEffect(() => {
+    globalVal.setBallPos(1);
+  });
+
   return (
     <div>
       <svg

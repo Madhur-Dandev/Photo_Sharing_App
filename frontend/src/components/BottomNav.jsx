@@ -1,59 +1,35 @@
 import { Link } from "react-router-dom";
+import { useContext, useEffect, useRef } from "react";
 import { context } from "../context";
-import { useContext, useRef, useState, useEffect } from "react";
 
-const Navbar = () => {
+const BottomNav = () => {
   const globalVal = useContext(context);
-
-  const hamMenu = useRef();
   const ball = useRef();
 
   useEffect(() => {
     if (globalVal.ballPos === 2) {
-      ball.current.classList.remove("-left-1.5");
-      ball.current.classList.add("left-nav-middle");
-      ball.current.classList.remove("left-nav-end");
+      ball.current.classList.remove("left-bottom-first");
+      ball.current.classList.add("left-bottom-middle");
+      ball.current.classList.remove("left-bottom-end");
     } else if (globalVal.ballPos === 3) {
-      ball.current.classList.remove("-left-1.5");
-      ball.current.classList.remove("left-nav-middle");
-      ball.current.classList.add("left-nav-end");
+      ball.current.classList.remove("left-bottom-first");
+      ball.current.classList.remove("left-bottom-middle");
+      ball.current.classList.add("left-bottom-end");
     } else {
-      ball.current.classList.add("-left-1.5");
-      ball.current.classList.remove("left-nav-middle");
-      ball.current.classList.remove("left-nav-end");
+      ball.current.classList.add("left-bottom-first");
+      ball.current.classList.remove("left-bottom-middle");
+      ball.current.classList.remove("left-bottom-end");
     }
   }, [globalVal.ballPos]);
 
-  // const handleShowSidebar = () => {
-  //   console.log("hi");
-  //   if (!globalVal.showSidebar) {
-  //     globalVal.setShowSidebar(true);
-  //     hamMenu.current.children[2].classList.add("w-0");
-  //     hamMenu.current.children[1].classList.add("w-8");
-  //     hamMenu.current.children[0].classList.add("w-0");
-  //   } else {
-  //     globalVal.setShowSidebar(false);
-  //     hamMenu.current.children[2].classList.remove("w-0");
-  //     hamMenu.current.children[1].classList.remove("w-8");
-  //     hamMenu.current.children[0].classList.remove("w-0");
-  //   }
-  //   console.log();
-  // };
-
   return (
-    <nav className="bg-teal-400 py-3 px-4 flex justify-between items-center">
-      <div className="flex items-center gap-4">
-        <img src="/logo.png" alt="logo" className="w-10 rounded-full" />
-        <p className="font-extrabold text-xl text-zinc-700 font-logoFont">
-          UShare
-        </p>
-      </div>
-      <div className="relative sm:block hidden">
+    <nav className="fixed bottom-0 left-0 w-full bg-slate-500 p-2 sm:hidden block">
+      <div className="relative w-72 m-auto">
         <div
-          className="absolute -top-initial -left-1.5 w-9 h-9 bg-gray-500 rounded-full transition-all duration-200"
+          className="absolute -top-initial left-bottom-first w-9 h-9 bg-gray-100 rounded-full transition-all duration-200"
           ref={ball}
         ></div>
-        <ul className="flex items-center gap-10 z-10 relative">
+        <ul className="flex justify-evenly items-center gap-10 z-10 relative">
           <li>
             <Link to="/" onClick={() => globalVal.setBallPos(1)}>
               <svg
@@ -61,7 +37,7 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
-                className="nav-list-icon"
+                className="bottom-list-icon"
               >
                 <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path>
                 <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path>
@@ -75,7 +51,7 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
-                className="nav-list-icon"
+                className="bottom-list-icon"
               >
                 <path
                   clipRule="evenodd"
@@ -92,7 +68,7 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
-                className="nav-list-icon"
+                className="bottom-list-icon"
               >
                 <path
                   clipRule="evenodd"
@@ -104,25 +80,8 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
-      <div>
-        <a
-          href="/login"
-          className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-600 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-600  transition-all duration-600"
-        >
-          Login
-        </a>
-      </div>
-      {/* <div
-        className="flex flex-col gap-1 cursor-pointer absolute right-4 -rotate-180 z-50"
-        ref={hamMenu}
-        onClick={() => handleShowSidebar()}
-      >
-        <div className="h-1 w-4 bg-black transition-all duration-500"></div>
-        <div className="h-1 w-6 bg-black transition-all duration-500"></div>
-        <div className="h-1 w-8 bg-black transition-all duration-500"></div>
-      </div> */}
     </nav>
   );
 };
 
-export default Navbar;
+export default BottomNav;

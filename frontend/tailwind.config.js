@@ -18,7 +18,13 @@ export default {
         initial: "0.35rem",
         "nav-middle": "3.6rem",
         "nav-end": "7.6rem",
-      }
+        "bottom-first": "1.75rem",
+        "bottom-middle": "7.85rem",
+        "bottom-end": "14rem"
+      },
+      fontFamily: {
+        logoFont: ["Bruno Ace SC"]
+      },
     },
   },
   plugins: [],
