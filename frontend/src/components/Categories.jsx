@@ -35,7 +35,7 @@ const Categories = () => {
               className="text-slate-100 font-bold text-4xl"
               style={{ textShadow: "0px 2px 10px white" }}
             >
-              Motivation
+              Space
             </p>
           </div>
         </a>
@@ -51,7 +51,7 @@ const Categories = () => {
               className="text-slate-100 font-bold text-4xl"
               style={{ textShadow: "0px 2px 10px white" }}
             >
-              Motivation
+              Technology
             </p>
           </div>
         </a>
@@ -67,7 +67,7 @@ const Categories = () => {
               className="text-slate-100 font-bold text-4xl"
               style={{ textShadow: "0px 2px 10px white" }}
             >
-              Motivation
+              Nature
             </p>
           </div>
         </a>
@@ -83,7 +83,7 @@ const Categories = () => {
               className="text-slate-100 font-bold text-4xl"
               style={{ textShadow: "0px 2px 10px white" }}
             >
-              Motivation
+              Wallpaper
             </p>
           </div>
         </a>
@@ -99,7 +99,7 @@ const Categories = () => {
               className="text-slate-100 font-bold text-4xl"
               style={{ textShadow: "0px 2px 10px white" }}
             >
-              Motivation
+              Sports
             </p>
           </div>
         </a>

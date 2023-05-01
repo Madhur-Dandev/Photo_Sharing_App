@@ -15,18 +15,10 @@ const Footer = () => {
           >
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
           </svg>
-          <span class="ml-3 text-xl">Tailblocks</span>
+          <span class="ml-3 text-xl">UShare</span>
         </a>
         <p class="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0 mt-4">
-          © 2020 Tailblocks —
-          <a
-            href="https://twitter.com/knyttneve"
-            class="text-gray-500 ml-1"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            @knyttneve
-          </a>
+          © 2023 UShare
         </p>
         <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
           <a class="text-gray-400">
