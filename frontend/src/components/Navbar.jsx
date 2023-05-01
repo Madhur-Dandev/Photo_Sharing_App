@@ -41,7 +41,7 @@ const Navbar = () => {
   // };
 
   return (
-    <nav className="bg-slate-800 py-3 px-4 flex justify-between items-center">
+    <nav className="bg-slate-800 py-3 px-4 flex justify-between items-center sticky top-0 z-40">
       <div className="flex items-center gap-4">
         <img src="/logo.png" alt="logo" className="w-10 rounded-full" />
         <p className="font-extrabold text-xl text-slate-200 font-logoFont">
