@@ -23,7 +23,7 @@ const BottomNav = () => {
   }, [globalVal.ballPos]);
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-slate-500 p-2 sm:hidden block">
+    <nav className="fixed bottom-0 left-0 w-full bg-slate-500 p-2 sm:hidden block z-30">
       <div className="relative w-72 m-auto">
         <div
           className="absolute -top-initial left-bottom-first w-9 h-9 bg-gray-100 rounded-full transition-all duration-200"

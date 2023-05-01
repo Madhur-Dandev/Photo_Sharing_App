@@ -41,10 +41,10 @@ const Navbar = () => {
   // };
 
   return (
-    <nav className="bg-teal-400 py-3 px-4 flex justify-between items-center">
+    <nav className="bg-slate-800 py-3 px-4 flex justify-between items-center">
       <div className="flex items-center gap-4">
         <img src="/logo.png" alt="logo" className="w-10 rounded-full" />
-        <p className="font-extrabold text-xl text-zinc-700 font-logoFont">
+        <p className="font-extrabold text-xl text-slate-200 font-logoFont">
           UShare
         </p>
       </div>
@@ -107,7 +107,7 @@ const Navbar = () => {
       <div>
         <a
           href="/login"
-          className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-600 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-600  transition-all duration-600"
+          className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-200 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-200  transition-all duration-600"
         >
           Login
         </a>

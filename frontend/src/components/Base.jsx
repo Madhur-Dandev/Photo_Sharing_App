@@ -6,8 +6,8 @@ const Base = () => {
   return (
     <>
       <Navbar />
-      <BottomNav />
       <Outlet />
+      <BottomNav />
     </>
   );
 };
