@@ -15,12 +15,12 @@ const HomeHero = () => {
     "/images/hero4.jpg",
   ];
 
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const intervalId = setInterval(
       () => setIndex((index) => index + 1),
-      3000 // every 3 seconds
+      2000 // every 3 seconds
     );
     return () => clearTimeout(intervalId);
   }, []);
