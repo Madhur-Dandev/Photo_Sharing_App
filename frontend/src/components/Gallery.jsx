@@ -222,7 +222,7 @@ const Gallery = () => {
         </form>
       </div>
       <div className="p-5">
-        <h1 className="text-4xl font-bold uppercase flex justify-center items-center">
+        <h1 className="text-4xl font-bold uppercase flex justify-center items-center my-2">
           <span className="text-stone-800 text-5xl">R</span>ecommende
           <span className="text-slate-800 text-5xl">d</span>
         </h1>

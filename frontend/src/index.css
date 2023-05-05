@@ -29,6 +29,10 @@
     @apply w-full h-full object-cover rounded-full
 }
 
+.auth-form-elem {
+    @apply p-3 w-1/2 m-auto rounded
+}
+
 @media screen and (max-width: 400px) {
     .guide-container {
         @apply grid-cols-1 place-items-center rounded-xl

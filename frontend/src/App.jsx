@@ -7,6 +7,7 @@ import Base from "./components/Base";
 import Home from "./components/Home";
 import Gallery from "./components/Gallery";
 import About from "./components/About";
+import Login from "./components/Login";
 
 function App() {
   const globalVal = useContext(context);
@@ -20,6 +21,7 @@ function App() {
             <Route path="gallery" element={<Gallery />} />
             <Route path="about" element={<About />} />
           </Route>
+          <Route path="login" element={<Login />} />
         </Routes>
       </Router>
     </div>
