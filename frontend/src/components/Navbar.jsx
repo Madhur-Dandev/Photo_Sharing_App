@@ -105,12 +105,12 @@ const Navbar = () => {
         </ul>
       </div>
       <div>
-        <a
-          href="/login"
+        <Link
+          to="/auth/login"
           className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-200 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-200  transition-all duration-600"
         >
           Login
-        </a>
+        </Link>
       </div>
       {/* <div
         className="flex flex-col gap-1 cursor-pointer absolute right-4 -rotate-180 z-50"

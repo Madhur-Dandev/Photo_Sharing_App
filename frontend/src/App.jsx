@@ -8,6 +8,7 @@ import Home from "./components/Home";
 import Gallery from "./components/Gallery";
 import About from "./components/About";
 import Login from "./components/Login";
+import AuthFormBase from "./components/AuthFormBase";
 
 function App() {
   const globalVal = useContext(context);
@@ -22,6 +23,7 @@ function App() {
             <Route path="about" element={<About />} />
           </Route>
           <Route path="login" element={<Login />} />
+          <Route path="auth/:type" element={<AuthFormBase />} />
         </Routes>
       </Router>
     </div>
