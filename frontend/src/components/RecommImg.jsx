@@ -4,7 +4,7 @@ const RecommImg = ({ img }) => {
   const image = useRef();
 
   useEffect(() => {
-    console.log(image);
+    // console.log(image.current);
   }, []);
 
   return (
@@ -15,7 +15,7 @@ const RecommImg = ({ img }) => {
         alt={img.user_name}
         className="w-full"
         loading="lazy"
-        onLoadStart={() => console.log("hi")}
+        onLoad={() => console.log("hi")}
         ref={image}
       />
       <div

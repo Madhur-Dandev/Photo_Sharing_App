@@ -216,13 +216,13 @@ const Gallery = () => {
             ref={searchInput}
             className="w-full p-2 sm:p-3 text-slate-900 text-sm sm:text-base"
           />
-          <button className="bg-slate-300 px-4 font-bold text:sm sm:text-lg">
+          <button className="bg-slate-300 px-4 font-bold text:sm sm:text-lg bg-neutral-600">
             Search
           </button>
         </form>
       </div>
       <div className="p-5">
-        <h1 className="text-4xl font-bold uppercase flex justify-center items-center my-2">
+        <h1 className="text-4xl font-bold uppercase flex justify-center items-center my-5">
           <span className="text-stone-800 text-5xl">R</span>ecommende
           <span className="text-slate-800 text-5xl">d</span>
         </h1>
