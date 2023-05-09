@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import TextTransition from "react-text-transition";
 import { register } from "swiper/element/bundle";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
@@ -83,9 +84,12 @@ const HomeHero = () => {
             <TextTransition>{TEXT[index % TEXT.length]}</TextTransition>
           </span>
         </p>
-        <button className="px-4 py-1 rounded-md font-bold text-slate-200 text-2xl bg-teal-400 transition-colors duration-500 hover:text-slate-200 hover:bg-slate-600">
+        <Link
+          to="/auth/login"
+          className="px-4 py-1 rounded-md font-bold text-slate-200 text-2xl bg-teal-400 transition-colors duration-500 hover:text-slate-200 hover:bg-slate-600"
+        >
           Login
-        </button>
+        </Link>
       </div>
     </div>
   );

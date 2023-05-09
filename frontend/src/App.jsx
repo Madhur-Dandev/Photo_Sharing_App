@@ -9,6 +9,7 @@ import Gallery from "./components/Gallery";
 import About from "./components/About";
 import Login from "./components/Login";
 import AuthFormBase from "./components/AuthFormBase";
+import Profile from "./components/Profile";
 
 function App() {
   const globalVal = useContext(context);
@@ -21,6 +22,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="about" element={<About />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
           <Route path="login" element={<Login />} />
           <Route path="auth/:type" element={<AuthFormBase />} />

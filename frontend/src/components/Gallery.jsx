@@ -216,7 +216,7 @@ const Gallery = () => {
             ref={searchInput}
             className="w-full p-2 sm:p-3 text-slate-900 text-sm sm:text-base"
           />
-          <button className="bg-slate-300 px-4 font-bold text:sm sm:text-lg bg-neutral-600">
+          <button className="px-4 font-bold text:sm sm:text-lg bg-neutral-600">
             Search
           </button>
         </form>

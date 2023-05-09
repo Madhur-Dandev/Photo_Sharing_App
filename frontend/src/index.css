@@ -55,4 +55,16 @@
     .guide-img {
         @apply rounded-none
     }
+
+    .profile-info-div {
+        @apply -top-9
+    }
+
+    .profile-name {
+        @apply text-base
+    }
+
+    .follow-text {
+        font-size: .6rem;
+    }
 }
