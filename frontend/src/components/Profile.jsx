@@ -1,3 +1,5 @@
+import ImgGrid from "./ImgGrid";
+
 const Profile = () => {
   return (
     <div className="flex flex-col">
@@ -9,7 +11,7 @@ const Profile = () => {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="flex flex-col sm:flex-row items-center px-2 md:px-32 lg:px-44 xl:px-60 gap-2 sm:gap-10 pb-1 sm:pb-10 relative -top-6 sm:-top-11 profile-info-div">
+        <div className="flex flex-col sm:flex-row items-center px-2 md:px-32 lg:px-44 xl:px-60 gap-2 sm:gap-10 relative -top-6 sm:-top-11 profile-info-div">
           <div className="w-max">
             <div className="w-24 h-24 sm:w-40 sm:h-40 rounded-full overflow-hidden">
               <img
@@ -21,7 +23,7 @@ const Profile = () => {
           </div>
           <div className="py-1 sm:py-4 w-full relative top-1 sm:top-0 text-center sm:text-start">
             <p className="font-bold text-lg sm:text-2xl profile-name">
-              Madhuri Kusumshatri
+              Madhuri Kusumshastri
             </p>
             <div className="flex flex-col lg:flex-row justify-between lg:items-center">
               <div className="text-xs sm:text-sm follow-text">
@@ -40,16 +42,16 @@ const Profile = () => {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    class="w-3 lg:w-5 ml-1"
+                    className="w-3 lg:w-5 ml-1"
                   >
                     <defs>
                       <linearGradient
                         id="my-gradient"
                         gradientTransform="rotate(45)"
                       >
-                        <stop offset="0%" stop-color="cyan" />
-                        <stop offset="50%" stop-color="magenta" />
-                        <stop offset="100%" stop-color="yellow" />
+                        <stop offset="0%" stopColor="cyan" />s
+                        <stop offset="50%" stopColor="magenta" />
+                        <stop offset="100%" stopColor="yellow" />
                       </linearGradient>
                     </defs>
                     <path
@@ -63,7 +65,10 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1"></div>
+      <div className="flex-1">
+        <p className="text-center mb-2 sm:mb-10 sm:text-4xl text-3xl mt-5 sm:mt-0 font-bold">Uploaded Photos</p>
+        <ImgGrid />
+      </div>
     </div>
   );
 };

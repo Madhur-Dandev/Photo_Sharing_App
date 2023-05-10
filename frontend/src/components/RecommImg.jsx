@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-const RecommImg = ({ img }) => {
+const RecommImg = ({ img, showUserInfo }) => {
   const image = useRef();
 
   useEffect(() => {
@@ -18,22 +18,24 @@ const RecommImg = ({ img }) => {
         onLoad={() => console.log("hi")}
         ref={image}
       />
-      <div
+      {showUserInfo && 
+        <div
         className="flex items-center gap-1 p-2 md:absolute md:w-full top-0 left-0 md:opacity-0 md:group-hover:opacity-100 md:transition-opacity md:duration-500 md:bg-opacity-50"
         style={{
-          backgroundImage: "linear-gradient(to bottom, grey, transparent)",
+          backgroundImage: "linear-gradient(to bottom, grey, transparent)"
         }}
-      >
-        <div className="w-9 h-9 overflow-hidden rounded-full">
-          <img
-            src={img.user_avatar}
-            alt={img.user_name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+        >
+          <div className="w-9 h-9 overflow-hidden rounded-full ">
+            <img
+              src={img.user_avatar}
+              alt={img.user_name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              />
+          </div>
+          <p className="text-base font-bold">{img.user_name}</p>
         </div>
-        <p className="text-base font-bold">{img.user_name}</p>
-      </div>
+      }
     </div>
   );
 };
