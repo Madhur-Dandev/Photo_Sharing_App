@@ -13,7 +13,10 @@ const RecommImg = ({ img, showUserInfo }) => {
     // section to display each image in gallery or search.
     <div
       className="relative group cursor-pointer"
-      onClick={() => console.log("hi")}
+      onClick={() => {
+        globalVal.setImgDetails({ ...img });
+        globalVal.setShowImgDetails(true);
+      }}
     >
       <img
         src={img.img}

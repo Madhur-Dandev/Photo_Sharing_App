@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="bg-slate-600 text-slate-100 relative">
-      <ImgDetails />
+      {globalVal.showImgDetails && <ImgDetails />}
       <Router>
         <Routes>
           <Route path="/" element={<Base />}>

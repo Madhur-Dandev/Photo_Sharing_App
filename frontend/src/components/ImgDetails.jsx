@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { context } from "../context";
-import rImg1 from "/images/recommended1.jpg";
 
 const ImgDetails = () => {
+  const imgDetailContainer = useRef();
   const globalVal = useContext(context);
   const [comment, setComment] = useState("");
   const comments = [
@@ -28,17 +28,46 @@ const ImgDetails = () => {
     },
   ];
 
-  const info = {
-    id: 1,
-    user_name: "Madhur Dandev",
-    user_avatar:
-      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.OyfD4XonoalTInNN_EU19QHaHa%26pid%3DApi&f=1&ipt=cfaa12adff3349daa78a4e46287bcabb40e96ef8034b139204c169f5f2596d78&ipo=images",
-    img: rImg1,
-  };
+  useEffect(() => {
+    setTimeout(() => {
+      imgDetailContainer.current.classList.add("opacity-100");
+    }, 100);
+  }, []);
+
+  const info = globalVal.imgDetails;
 
   return (
-    !globalVal.showImgDetails && (
-      <div className="fixed top-0 left-0 w-full h-screen z-50 backdrop-blur-lg p-3 bg-gray-900 bg-opacity-60 overflow-scroll">
+    globalVal.showImgDetails && (
+      <div
+        className="fixed top-0 left-0 w-full h-screen z-50 backdrop-blur-lg p-3 bg-gray-900 bg-opacity-60 overflow-scroll opacity-0 transition-all duration-300"
+        ref={imgDetailContainer}
+        onTransitionEnd={(e) => {
+          if (
+            globalVal.showImgDetails &&
+            !e.target.classList.contains("opacity-100")
+          )
+            globalVal.setShowImgDetails(false);
+        }}
+        // onTransitionEnd={() => globalVal.setShowImgDetails(false)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-6 h-6 my-4 mx-2 cursor-pointer"
+          onClick={() =>
+            imgDetailContainer.current.classList.remove("opacity-100")
+          }
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+
         <div className="flex justify-between items-center overflow-y-scroll">
           <div className="flex items-center gap-3">
             <img
@@ -89,12 +118,15 @@ const ImgDetails = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          <div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          <div className="grid place-items-center h-full lg:h-screen">
             <img
               src={info.img}
               alt="image"
-              className="w-full h-screen object-contain"
+              className="w-full h-full object-contain"
+              style={{
+                height: "700px",
+              }}
             />
           </div>
           <div className="mt-10 lg:mt-0">
@@ -179,7 +211,7 @@ const ImgDetails = () => {
                 </div>
                 <div className="mt-5">
                   {comments.map((item) => (
-                    <div className="flex flex-col gap-1 my-3">
+                    <div className="flex flex-col gap-1 my-3" key={item.id}>
                       <div className="flex items-center gap-3">
                         <img
                           src={item.user_avatar}
