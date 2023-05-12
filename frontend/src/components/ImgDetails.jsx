@@ -1,9 +1,32 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { context } from "../context";
 import rImg1 from "/images/recommended1.jpg";
 
 const ImgDetails = () => {
   const globalVal = useContext(context);
+  const [comment, setComment] = useState("");
+  const comments = [
+    {
+      id: 1,
+      user_name: "Gaurav Narnaware",
+      user_avatar: "https://avatars.githubusercontent.com/u/74124521?v=4",
+      comment: "Hi there! This is me.",
+    },
+    {
+      id: 2,
+      user_name: "Om Raut",
+      user_avatar: "https://avatars.githubusercontent.com/u/85446773?v=4",
+      comment:
+        "Awesome Photograph. I think I should hire you. Please DM me your contacts.",
+    },
+    {
+      id: 3,
+      user_name: "Madhur Dandev",
+      user_avatar: "https://avatars.githubusercontent.com/u/123223372?v=4",
+      comment:
+        "Great I love it. The way you give that message via that tetra pack that's amazing. We must consider buying just paper bottle only.",
+    },
+  ];
 
   const info = {
     id: 1,
@@ -66,7 +89,7 @@ const ImgDetails = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
           <div>
             <img
               src={info.img}
@@ -74,46 +97,102 @@ const ImgDetails = () => {
               className="w-full h-screen object-contain"
             />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="flex items-center gap-1">
-                <span>Like</span>
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
+          <div className="mt-10 lg:mt-0">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <p className="photo-action bg-red-500">
+                  <span className="sm:block hidden">Like</span>
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                      />
+                    </svg>
+                  </span>
+                </p>
+                <p className="photo-action bg-green-600">
+                  <span className="sm:block hidden">Save</span>
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
+                      />
+                    </svg>
+                  </span>
+                </p>
+              </div>
+              <div className="relative bg-blue-500 font-bold text-base sm:text-2xl px-3 py-1.5 rounded-md group">
+                <span>Free Download</span>
+                <div className="absolute top-full left-0 group-hover:flex flex-col w-full rounded-md overflow-hidden hidden">
+                  <a href="#" className="photo-size">
+                    1920 x 1080
+                  </a>
+                  <a href="#" className="photo-size">
+                    1080 x 720
+                  </a>
+                  <a href="#" className="photo-size">
+                    640 x 480
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center mt-3 gap-2">
+              <p>Uploaded On : </p>
+              <p className="font-bold">22-3-2023</p>
+            </div>
+            <div className="mt-3">
+              <p className="text-center font-bold text-4xl">Comments</p>
+              <div>
+                <div className="flex w-full bg-slate-600 rounded overflow-hidden mt-2">
+                  <input
+                    type="text"
+                    onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                    className="text-slate-800 font-bold w-full px-2"
+                    placeholder="type comment"
+                    aria-placeholder="type comment"
+                  />
+                  <button
+                    onClick={() => {}}
+                    className="text-center whitespace-nowrap py-1.5 px-4"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                    />
-                  </svg>
-                </span>
-              </p>
-              <p className="flex items-center gap-1">
-                <span>Save</span>
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
-                    />
-                  </svg>
-                </span>
-              </p>
+                    Add Comment
+                  </button>
+                </div>
+                <div className="mt-5">
+                  {comments.map((item) => (
+                    <div className="flex flex-col gap-1 my-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.user_avatar}
+                          alt={item.user_name}
+                          className="w-8 h-90 rounded-full"
+                        />
+                        <p>{item.user_name}</p>
+                      </div>
+                      <p className="ml-11">{item.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
