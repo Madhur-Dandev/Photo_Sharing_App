@@ -10,12 +10,14 @@ import About from "./components/About";
 import Login from "./components/Login";
 import AuthFormBase from "./components/AuthFormBase";
 import Profile from "./components/Profile";
+import ImgDetails from "./components/ImgDetails";
 
 function App() {
   const globalVal = useContext(context);
 
   return (
-    <div className="bg-slate-600 text-slate-100">
+    <div className="bg-slate-600 text-slate-100 relative">
+      <ImgDetails />
       <Router>
         <Routes>
           <Route path="/" element={<Base />}>
