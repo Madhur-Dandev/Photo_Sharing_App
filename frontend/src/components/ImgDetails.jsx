@@ -1,32 +1,10 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import { context } from "../context";
+import CommentAndReply from "./CommentAndReply";
 
 const ImgDetails = () => {
   const imgDetailContainer = useRef();
   const globalVal = useContext(context);
-  const [comment, setComment] = useState("");
-  const comments = [
-    {
-      id: 1,
-      user_name: "Gaurav Narnaware",
-      user_avatar: "https://avatars.githubusercontent.com/u/74124521?v=4",
-      comment: "Hi there! This is me.",
-    },
-    {
-      id: 2,
-      user_name: "Om Raut",
-      user_avatar: "https://avatars.githubusercontent.com/u/85446773?v=4",
-      comment:
-        "Awesome Photograph. I think I should hire you. Please DM me your contacts.",
-    },
-    {
-      id: 3,
-      user_name: "Madhur Dandev",
-      user_avatar: "https://avatars.githubusercontent.com/u/123223372?v=4",
-      comment:
-        "Great I love it. The way you give that message via that tetra pack that's amazing. We must consider buying just paper bottle only.",
-    },
-  ];
 
   useEffect(() => {
     setTimeout(() => {
@@ -40,15 +18,16 @@ const ImgDetails = () => {
     globalVal.showImgDetails && (
       <div
         className="fixed top-0 left-0 w-full h-screen z-50 backdrop-blur-lg p-3 bg-gray-900 bg-opacity-60 overflow-scroll opacity-0 transition-all duration-300"
+        id="imgDetailContainer"
         ref={imgDetailContainer}
         onTransitionEnd={(e) => {
           if (
             globalVal.showImgDetails &&
-            !e.target.classList.contains("opacity-100")
+            !e.target.classList.contains("opacity-100") &&
+            e.target.id === "imgDetailContainer"
           )
             globalVal.setShowImgDetails(false);
         }}
-        // onTransitionEnd={() => globalVal.setShowImgDetails(false)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -190,42 +169,7 @@ const ImgDetails = () => {
               <p>Uploaded On : </p>
               <p className="font-bold">22-3-2023</p>
             </div>
-            <div className="mt-3">
-              <p className="text-center font-bold text-4xl">Comments</p>
-              <div>
-                <div className="flex w-full bg-slate-600 rounded overflow-hidden mt-2">
-                  <input
-                    type="text"
-                    onChange={(e) => setComment(e.target.value)}
-                    value={comment}
-                    className="text-slate-800 font-bold w-full px-2"
-                    placeholder="type comment"
-                    aria-placeholder="type comment"
-                  />
-                  <button
-                    onClick={() => {}}
-                    className="text-center whitespace-nowrap py-1.5 px-4"
-                  >
-                    Add Comment
-                  </button>
-                </div>
-                <div className="mt-5">
-                  {comments.map((item) => (
-                    <div className="flex flex-col gap-1 my-3" key={item.id}>
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={item.user_avatar}
-                          alt={item.user_name}
-                          className="w-8 h-90 rounded-full"
-                        />
-                        <p>{item.user_name}</p>
-                      </div>
-                      <p className="ml-11">{item.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CommentAndReply type="comment" />
           </div>
         </div>
       </div>
