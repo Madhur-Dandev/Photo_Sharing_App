@@ -2,7 +2,6 @@
 import { useContext } from "react";
 import { context } from "./context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Base from "./components/Base";
 import Home from "./components/Home";
 import Gallery from "./components/Gallery";
@@ -11,12 +10,15 @@ import Login from "./components/Login";
 import AuthFormBase from "./components/AuthFormBase";
 import Profile from "./components/Profile";
 import ImgDetails from "./components/ImgDetails";
+import UploadForm from "./components/UploadForm";
+import Alert from "./components/Alert";
 
 function App() {
   const globalVal = useContext(context);
 
   return (
     <div className="bg-slate-600 text-slate-100 relative">
+      {globalVal.showAlert && <Alert />}
       {globalVal.showImgDetails && <ImgDetails />}
       <Router>
         <Routes>
@@ -25,6 +27,7 @@ function App() {
             <Route path="gallery" element={<Gallery />} />
             <Route path="about" element={<About />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="upload" element={<UploadForm />} />
           </Route>
           <Route path="login" element={<Login />} />
           <Route path="auth/:type" element={<AuthFormBase />} />

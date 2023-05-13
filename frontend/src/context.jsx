@@ -7,6 +7,8 @@ const Global = ({ children }) => {
   const [ballPos, setBallPos] = useState(1);
   const [showImgDetails, setShowImgDetails] = useState(false);
   const [imgDetails, setImgDetails] = useState({});
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   return (
     <context.Provider
@@ -19,6 +21,10 @@ const Global = ({ children }) => {
         setShowImgDetails,
         imgDetails,
         setImgDetails,
+        showAlert,
+        setShowAlert,
+        alertMsg,
+        setAlertMsg,
       }}
     >
       {children}
