@@ -9,6 +9,7 @@ const Gallery = () => {
 
   useEffect(() => {
     globalVal.setBallPos(2);
+    globalVal.setShowBall(true);
   }, []);
 
   useEffect(() => {

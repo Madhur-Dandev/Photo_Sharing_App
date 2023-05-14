@@ -9,6 +9,7 @@ function Home() {
 
   useEffect(() => {
     globalVal.setBallPos(1);
+    globalVal.setShowBall(true);
   }, []);
 
   return (

@@ -27,7 +27,11 @@ const BottomNav = () => {
       <div className="relative w-72 m-auto">
         <div
           className="absolute -top-initial left-bottom-first w-9 h-9 bg-gray-500 rounded-full transition-all duration-200"
+          style={{
+            transitionTimingFunction: "cubic-bezier(.18,.89,.32,1.28)",
+          }}
           ref={ball}
+          hidden={!globalVal.showBall}
         ></div>
         <ul className="flex justify-evenly items-center gap-10 z-10 relative">
           <li>

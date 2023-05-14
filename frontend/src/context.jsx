@@ -5,6 +5,7 @@ const context = createContext();
 const Global = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [ballPos, setBallPos] = useState(1);
+  const [showBall, setShowBall] = useState(false);
   const [showImgDetails, setShowImgDetails] = useState(false);
   const [imgDetails, setImgDetails] = useState({});
   const [showAlert, setShowAlert] = useState(false);
@@ -17,6 +18,8 @@ const Global = ({ children }) => {
         setShowSidebar,
         ballPos,
         setBallPos,
+        showBall,
+        setShowBall,
         showImgDetails,
         setShowImgDetails,
         imgDetails,

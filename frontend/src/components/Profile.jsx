@@ -1,6 +1,11 @@
+import { useEffect } from "react";
 import ImgGrid from "./ImgGrid";
 
 const Profile = () => {
+  useEffect(() => {
+    globalVal.setShowBall(false);
+  }, []);
+
   return (
     <div className="flex flex-col">
       <div>
@@ -66,7 +71,9 @@ const Profile = () => {
         </div>
       </div>
       <div className="flex-1">
-        <p className="text-center mb-2 sm:mb-10 sm:text-4xl text-3xl mt-5 sm:mt-0 font-bold">Uploaded Photos</p>
+        <p className="text-center mb-2 sm:mb-10 sm:text-4xl text-3xl mt-5 sm:mt-0 font-bold">
+          Uploaded Photos
+        </p>
         <ImgGrid />
       </div>
     </div>

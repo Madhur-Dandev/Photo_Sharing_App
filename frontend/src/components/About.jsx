@@ -6,6 +6,7 @@ function About() {
 
   useEffect(() => {
     globalVal.setBallPos(3);
+    globalVal.setShowBall(true);
   }, []);
 
   return (

@@ -43,6 +43,10 @@ const UploadForm = () => {
     }
   }, [showPreview]);
 
+  useEffect(() => {
+    globalVal.setShowBall(false);
+  }, []);
+
   return (
     <div className="grid place-items-center">
       <div className="w-11/12 sm:w-3/4 sm:mx-auto h-screen">
