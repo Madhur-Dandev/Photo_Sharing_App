@@ -11,25 +11,16 @@ const UploadForm = () => {
 
   console.log(image);
 
-  const triggerAlert = (msg) => {
-    console.log(msg);
-    globalVal.setAlertMsg(msg);
-    globalVal.setShowAlert(false);
-    setTimeout(() => {
-      globalVal.setShowAlert(true);
-    }, 1);
-  };
-
   const setUploadImage = (files) => {
     if (files[0].type.includes("image")) {
       if (files.length > 1) {
-        triggerAlert("Cannot upload more than 1 file.");
+        globalVal.triggerAlert("Cannot upload more than 1 file.");
       }
       setImage(files[0]);
       setShowPreview(true);
       dropContainer.current.classList.add("border-green-400");
     } else {
-      triggerAlert("File must be image");
+      globalVal.triggerAlert("File must be image");
     }
     dropContainer.current.classList.remove("border-red-400");
   };
@@ -69,7 +60,7 @@ const UploadForm = () => {
             onDrop={(e) => {
               e.preventDefault();
               if (!showPreview) setUploadImage(e.dataTransfer.files);
-              else triggerAlert("Please remove the image first");
+              else globalVal.triggerAlert("Please remove the image first");
             }}
             ref={dropContainer}
           >

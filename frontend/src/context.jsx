@@ -11,6 +11,15 @@ const Global = ({ children }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
 
+  const triggerAlert = (msg) => {
+    console.log(msg);
+    setAlertMsg(msg);
+    setShowAlert(false);
+    setTimeout(() => {
+      setShowAlert(true);
+    }, 1);
+  };
+
   return (
     <context.Provider
       value={{
@@ -28,6 +37,7 @@ const Global = ({ children }) => {
         setShowAlert,
         alertMsg,
         setAlertMsg,
+        triggerAlert,
       }}
     >
       {children}
