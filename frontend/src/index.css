@@ -34,7 +34,12 @@
 }
 
 .auth-link {
-    @apply w-full text-center text-xs sm:text-base bg-slate-600 p-2 rounded-full font-bold hover:bg-slate-200 hover:text-slate-600 transition-colors duration-200
+    /* @apply w-full text-center text-xs sm:text-base bg-slate-600 p-2 rounded-full font-bold hover:bg-slate-200 hover:text-slate-600 transition-colors duration-200 */
+    @apply w-full text-center text-xs sm:text-base p-2 rounded-full font-bold hover:text-slate-600 transition-all duration-200
+}
+
+.auth-btn {
+    @apply bg-slate-700 text-xl auth-form-elem hover:bg-slate-800 transition-colors duration-200
 }
 
 .photo-action {

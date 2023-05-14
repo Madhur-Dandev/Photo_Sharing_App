@@ -1,16 +1,18 @@
-import React from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
-import AuthLink from "./AuthLink";
 import ForgetPassForm from "./ForgetPassForm";
+import { Link } from "react-router-dom";
 
-const AuthFormBase = () => {
+const Auth = () => {
   const { type } = useParams();
+  const switchElem = useRef();
+  const [switchShow, setSwitchShow] = useState(true);
+  const [switchPos, setSwitchPos] = useState("");
 
   return (
-    <div className="flex h-screen relative">
-      {/* <div className="hidden md:block w-11/12 h-screen"> */}
+    <div className="flex h-screen relative bg-slate-600">
       <div className="absolute md:relative top-0 left-0 w-full blur-md md:blur-0 md:block md:w-11/12 h-screen">
         <img
           src="/images/login.jpg"
@@ -22,29 +24,44 @@ const AuthFormBase = () => {
         <h1 className="font-bold text-2xl sm:text-4xl">
           {type == "login" ? "Welcome Back! - Login" : "New? - Signup"}
         </h1>
-        <div className="w-full p-10">
-          {type === "login" && <LoginForm />}
-          {type === "signup" && <SignupForm />}
-          {type === "forgetPass" && <ForgetPassForm />}
-        </div>
-        <div className="flex gap-5 bg-slate-900 p-2 rounded-full">
+        <div className="w-full p-5 sm:p-10">
           {type === "login" && (
-            <>
-              <AuthLink path="/auth/signup" name="Signup" />
-              <AuthLink path="/auth/forgetPass" name="Forget Password" />
-            </>
+            <LoginForm
+              setSwitchPos={setSwitchPos}
+              setSwitchShow={setSwitchShow}
+            />
           )}
-          {type === "signup" && <AuthLink path="/auth/login" name="Login" />}
+          {type === "signup" && (
+            <SignupForm
+              setSwitchPos={setSwitchPos}
+              setSwitchShow={setSwitchShow}
+            />
+          )}
           {type === "forgetPass" && (
-            <>
-              <AuthLink path="/auth/login" name="Login" />
-              <AuthLink path="/auth/signup" name="Signup" />
-            </>
+            <ForgetPassForm setSwitchShow={setSwitchShow} />
           )}
+        </div>
+        <div className="flex bg-slate-900 rounded-full relative">
+          {switchShow && (
+            <div
+              className={`w-1/2 h-full absolute bg-slate-300 top-0 ${switchPos} rounded-full transition-all duration-200`}
+              ref={switchElem}
+            ></div>
+          )}
+          <div className="w-28 sm:w-40 flex z-10">
+            <Link to="/auth/login" className="auth-link">
+              Login
+            </Link>
+          </div>
+          <div className="w-28 sm:w-40 flex z-10">
+            <Link to="/auth/signup" className="auth-link">
+              Signup
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default AuthFormBase;
+export default Auth;

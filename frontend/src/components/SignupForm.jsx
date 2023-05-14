@@ -1,12 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-const SignupForm = () => {
+const SignupForm = ({ setSwitchPos, setSwitchShow }) => {
   const name = useRef();
   const email = useRef();
   const password = useRef();
   const [userName, setUserName] = useState();
   const [userEmail, setUserEmail] = useState();
   const [userPassword, setUserPassword] = useState();
+
+  useEffect(() => {
+    setSwitchPos(window.innerWidth >= 640 ? "left-40" : "left-28");
+    setSwitchShow(true);
+  }, []);
 
   return (
     <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
@@ -18,7 +23,7 @@ const SignupForm = () => {
         className="auth-form-elem text-slate-700"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
-        ref={email}
+        ref={name}
       />
       <input
         type="text"
@@ -51,7 +56,17 @@ const SignupForm = () => {
         />
         <label htmlFor="showPass">Show Password</label>
       </div>
-      <button className="bg-slate-700 text-xl auth-form-elem">Signup</button>
+      <button className="auth-btn">Signup</button>
+      <button
+        className="auth-btn flex justify-between items-center"
+        style={{
+          backgroundColor: "WindowText",
+        }}
+      >
+        <img src="/images/google-icon.png" alt="google icon" className="w-7" />
+        <span className="text-sm sm:text-base">Signup With Google</span>
+        <div></div>
+      </button>
     </form>
   );
 };

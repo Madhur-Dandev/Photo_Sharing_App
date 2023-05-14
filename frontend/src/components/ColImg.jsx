@@ -2,6 +2,9 @@ import { useRef, useEffect, useContext } from "react";
 import { context } from "../context";
 
 const ColImg = ({ img, showUserInfo }) => {
+  /**
+   * This component is use display single image item of a grid image column
+   */
   const globalVal = useContext(context);
   const image = useRef();
 
@@ -14,6 +17,10 @@ const ColImg = ({ img, showUserInfo }) => {
     <div
       className="relative group cursor-pointer"
       onClick={() => {
+        /**
+         * When any user clicks on image information will get stored in global values.
+         * And also the image detail component showed up.
+         */
         globalVal.setImgDetails({ ...img });
         globalVal.setShowImgDetails(true);
       }}

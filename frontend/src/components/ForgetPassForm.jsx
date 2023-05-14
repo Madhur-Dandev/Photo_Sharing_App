@@ -1,8 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
-const ForgetPassForm = () => {
+const ForgetPassForm = ({ setSwitchShow }) => {
   const email = useRef();
   const [userEmail, setUserEmail] = useState();
+
+  useEffect(() => {
+    setSwitchShow(false);
+  }, []);
 
   return (
     <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
