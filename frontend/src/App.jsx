@@ -1,4 +1,3 @@
-// import "./App.css";
 import { useContext } from "react";
 import { context } from "./context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -14,11 +13,13 @@ import UploadForm from "./components/UploadForm";
 import Alert from "./components/Alert";
 
 function App() {
-  const globalVal = useContext(context);
+  const globalVal = useContext(context); // access global context values
 
   return (
     <div className="bg-slate-600 text-slate-100 relative">
+      {/* show alert only when something triggers it. */}
       {globalVal.showAlert && <Alert />}
+      {/* Component to show the details of image when it shows to user */}
       {globalVal.showImgDetails && <ImgDetails />}
       <Router>
         <Routes>

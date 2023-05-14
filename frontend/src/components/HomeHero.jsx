@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import TextTransition from "react-text-transition";
-import { register } from "swiper/element/bundle";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
 const HomeHero = () => {
-  register();
-  const TEXT = ["Click", "Try", "Upload", "UShare"];
+  /**
+   *
+   */
+  const TEXT = ["Click", "Try", "Upload", "UShare"]; // Text that will shown in slide up animation
   const IMAGES = [
     "/images/hero1.jpg",
     "/images/hero2.jpg",
@@ -16,14 +17,18 @@ const HomeHero = () => {
     "/images/hero4.jpg",
   ];
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(0); // state for text change animation.
 
   useEffect(() => {
     const intervalId = setInterval(
+      /**
+       * interval for text animation.
+       * @returns increments the index
+       */
       () => setIndex((index) => index + 1),
-      2000 // every 3 seconds
+      2000 // every 2 seconds
     );
-    return () => clearTimeout(intervalId);
+    return () => clearTimeout(intervalId); // the interval will be cleared just before the element going to be unmount.
   }, []);
 
   // useMemo(() => {

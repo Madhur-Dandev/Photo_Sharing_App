@@ -1,18 +1,28 @@
-import { useEffect, useContext, useRef, useMemo, useState } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { context } from "../context";
 import ImgGrid from "./ImgGrid";
 
 const Gallery = () => {
-  const globalVal = useContext(context);
+  /**
+   * Parent component for gallery page.
+   */
+  const globalVal = useContext(context); // access the global values of context.
   const searchInput = useRef();
-  const searchTextArr = ["Nature", "Wallpaper", "Sports"];
+  const searchTextArr = ["Nature", "Wallpaper", "Sports"]; // Each element will have typing animation for search input.
 
   useEffect(() => {
+    /**
+     * sets navigation icon ball position to 2 and shows the ball.
+     */
     globalVal.setBallPos(2);
     globalVal.setShowBall(true);
   }, []);
 
   useEffect(() => {
+    /**
+     * Checks if the searchInput.current has any element.
+     * If it is then starts the animation for search input's placeholder text.
+     */
     let interval;
     if (searchInput.current) {
       let index2 = 0;
@@ -64,6 +74,7 @@ const Gallery = () => {
             <ImgGridCol items={col} key={index} />
           ))}
         </div> */}
+        {/* Below element will display images in grid */}
         <ImgGrid showUserInfo={true} />
       </div>
     </div>

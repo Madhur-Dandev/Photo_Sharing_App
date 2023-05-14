@@ -3,6 +3,10 @@ import { context } from "../context";
 import CommentAndReply from "./CommentAndReply";
 
 const ImgDetails = () => {
+  /**
+   * This component shows the details of image selected.
+   * This allows user to download the image with different size, comment, like and save
+   */
   const imgDetailContainer = useRef();
   const globalVal = useContext(context);
 

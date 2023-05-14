@@ -1,7 +1,7 @@
 import { useRef, useEffect, useContext } from "react";
 import { context } from "../context";
 
-const RecommImg = ({ img, showUserInfo }) => {
+const ColImg = ({ img, showUserInfo }) => {
   const globalVal = useContext(context);
   const image = useRef();
 
@@ -48,4 +48,4 @@ const RecommImg = ({ img, showUserInfo }) => {
   );
 };
 
-export default RecommImg;
+export default ColImg;
