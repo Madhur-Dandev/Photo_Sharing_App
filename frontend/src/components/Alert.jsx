@@ -65,14 +65,14 @@ const Alert = () => {
       ref={alertDiv}
       onTransitionEnd={alertTextAnim}
     >
-      <div className="bg-amber-950 flex items-center gap-3 px-3 py-1 rounded-full transition-all duration-300 w-full">
+      <div className="bg-red-400 flex items-center gap-1 sm:gap-3 px-3 py-1 rounded-full transition-all duration-300 w-full">
         <div>
           <svg
             fill="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
-            className="w-7 text-slate-300"
+            className="w-5 sm:w-7 text-slate-50"
           >
             <path
               clipRule="evenodd"
@@ -81,7 +81,10 @@ const Alert = () => {
             ></path>
           </svg>
         </div>
-        <div className="text-slate-300 text-xs hidden" ref={alertText}></div>
+        <div
+          className="text-slate-50 text-xs hidden font-bold"
+          ref={alertText}
+        ></div>
       </div>
     </div>
   );
