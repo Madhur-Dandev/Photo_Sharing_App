@@ -77,7 +77,7 @@ function About() {
                 className="guide-img"
               />
             </div>
-            <div className="text-xs sm:text-sm upload m-4">
+            <div className="text-xs sm:text-sm md:text-base upload m-4">
               Done Selection! Now it's time to <strong>upload</strong>.
             </div>
           </div>

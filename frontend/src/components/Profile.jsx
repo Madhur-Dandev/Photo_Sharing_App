@@ -1,7 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { context } from "../context";
 import ImgGrid from "./ImgGrid";
 
 const Profile = () => {
+  const globalVal = useContext(context);
+
   useEffect(() => {
     globalVal.setShowBall(false);
   }, []);

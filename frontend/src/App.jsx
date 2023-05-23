@@ -30,7 +30,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="upload" element={<UploadForm />} />
           </Route>
-          <Route path="login" element={<Login />} />
+          {/* <Route path="login" element={<Login />} /> */}
           <Route path="auth/:type" element={<AuthFormBase />} />
         </Routes>
       </Router>
