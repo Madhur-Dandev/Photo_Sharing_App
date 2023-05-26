@@ -108,14 +108,52 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
-      <div>
-        <Link
-          to="/auth/login"
-          className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-200 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-200  transition-all duration-600"
-        >
-          Login
-        </Link>
-      </div>
+      {!globalVal.loggedin ? (
+        <div>
+          <Link
+            to="/auth/login"
+            className="px-4 py-2 text-lg rounded-md text-slate-200 font-bold bg-sky-800 shadow-nav-login shadow-slate-200 hover:bg-sky-700 hover:text-slate-100 hover:shadow-nav-login-hover hover:shadow-slate-200  transition-all duration-600"
+          >
+            Login
+          </Link>
+        </div>
+      ) : (
+        <div className="cursor-pointer relative group">
+          <div className="flex flex-col items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <p className="font-extrabold text-sm sm:text-base">
+              {globalVal.username}
+            </p>
+          </div>
+          <div className="group-hover:flex absolute hidden flex-col bg-emerald-900 top-full left-0 p-2 w-full before:hidden before:border-8 before:-top-4 before:border-emerald-900   before:border-r-transparent before:border-t-transparent before:border-l-transparent">
+            <Link to="/profile" className="logged-user-opt">
+              Profile
+            </Link>
+            <Link to="/upload" className="logged-user-opt">
+              Upload Image
+            </Link>
+            <p
+              onClick={() => console.log("logout")}
+              className="logged-user-opt"
+            >
+              Logout
+            </p>
+          </div>
+        </div>
+      )}
       {/* <div
         className="flex flex-col gap-1 cursor-pointer absolute right-4 -rotate-180 z-50"
         ref={hamMenu}

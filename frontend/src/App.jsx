@@ -27,7 +27,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="about" element={<About />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile/:id?" element={<Profile />} />
             <Route path="upload" element={<UploadForm />} />
           </Route>
           {/* <Route path="login" element={<Login />} /> */}

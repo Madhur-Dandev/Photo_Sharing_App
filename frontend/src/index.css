@@ -50,6 +50,10 @@
     @apply bg-slate-600 hover:bg-slate-700 transition-colors duration-200 p-2 text-sm
 }
 
+.logged-user-opt {
+    @apply hover:text-gray-500 font-bold transition-all duration-500 text-xs sm:text-base
+}
+
 @media screen and (max-width: 768px) {
     /* .form-section {
         background-image: linear-gradient(to left, green, blue);
