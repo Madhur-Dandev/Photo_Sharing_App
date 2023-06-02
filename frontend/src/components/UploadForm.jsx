@@ -1,7 +1,10 @@
 import { useRef, useContext, useState, useEffect } from "react";
 import { context } from "../context";
+import { useNavigate } from "react-router-dom";
 
 const UploadForm = () => {
+  const navigation = useNavigate();
+
   const globalVal = useContext(context);
   const [image, setImage] = useState({});
   const [showPreview, setShowPreview] = useState(false);
@@ -36,6 +39,7 @@ const UploadForm = () => {
 
   useEffect(() => {
     globalVal.setShowBall(false);
+    if (!globalVal.loggedin) navigation("/auth/login");
   }, []);
 
   return (

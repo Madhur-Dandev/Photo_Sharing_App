@@ -14,8 +14,8 @@ const Global = ({ children }) => {
   const [imgDetails, setImgDetails] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const [loggedin, setLoggedin] = useState(true);
-  const [username, setUsername] = useState("Madhur Dandev");
+  const [loggedin, setLoggedin] = useState(false);
+  const [username, setUsername] = useState("");
 
   const triggerAlert = (msg) => {
     /**
