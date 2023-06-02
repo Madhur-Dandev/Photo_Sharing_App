@@ -7,7 +7,10 @@ load_dotenv()
 
 try:
     # creating the database engine
-    db = create_engine(f'''mysql+pymysql://{getenv("DB_USER")}:{getenv("DB_PASS")}@localhost/{getenv("DB_DBNAME")}?charset=utf8mb4''')
+    db = create_engine(
+        f"""mysql+pymysql://{getenv("DB_USER")}:{getenv("DB_PASS")}@localhost/{getenv("DB_DBNAME")}?charset=utf8mb4""",
+        isolation_level="AUTOCOMMIT",
+    )
     # with db.connect() as conn:
     #     print(conn.execute(text("SHOW TABLES")).all())
 
