@@ -35,15 +35,47 @@ class Login(Main):
                                 )
                             )
                             .mappings()
-                            .all()
+                            .first()
                         )
                         if existing_user:
+                            print(existing_user)
                             if check_password_hash(
-                                existing_user.get("user_password", self.user_password)
+                                existing_user.get("user_password"), self.user_password
                             ):
-                                return jsonify(
-                                    {"success": True, "message": "Login Successfully"}
+                                access_token = encode(
+                                    {
+                                        "data": {"id": existing_user.get("user_id")},
+                                        "exp": datetime.utcnow()
+                                        + timedelta(minutes=15),
+                                    },
+                                    getenv("JWT_KEY"),
                                 )
+                                refresh_token = encode(
+                                    {
+                                        "data": {"id": existing_user.get("user_id")},
+                                        "exp": datetime.utcnow() + timedelta(days=5),
+                                    },
+                                    getenv("JWT_KEY"),
+                                )
+                                resp = res(
+                                    jsonify(
+                                        {
+                                            "success": True,
+                                            "message": "Login Successfully",
+                                            "access_token": access_token,
+                                        }
+                                    ),
+                                    200,
+                                )
+                                resp.set_cookie(
+                                    "refresh_token",
+                                    refresh_token,
+                                    secure=True,
+                                    httponly=True,
+                                    samesite=None,
+                                    max_age=(3600 * 24 * 30),
+                                )
+                                return resp
                             else:
                                 raise UserDefinedExc(401, "Password Incorrect!")
                         else:
@@ -105,17 +137,10 @@ class Signup(Main, Mail):
                             self.send_mail(
                                 "UShare Registration Verification",
                                 recipients=[self.user_email],
-                                html=f"""
-                                    <div style="max-width: 600px; margin: 0 auto;">
-                                        <h1 style="text-align: center; font-size: 32px; font-weight: bold;">Verify your email address</h1>
-                                        <p style="font-size: 18px; line-height: 1.5;">Please click the button below to verify your email address and activate your account:</p>
-                                        <div style="text-align: center;">
-                                            <a href="{req.root_url}api/auth/verify?token={data_token}" style="background-color: #1e90ff; color: #fff; display: inline-block; padding: 16px 24px; font-size: 18px; text-decoration: none; border-radius: 4px;">Verify Email Address</a>
-                                        </div>
-                                        <p style="font-size: 18px; line-height: 1.5;">If you did not request to verify your email address, please ignore this message.</p>
-                                    </div>
-                                    """,
+                                token=data_token,
+                                type="verify",
                             )
+
                             return jsonify(
                                 {
                                     "success": True,
@@ -144,12 +169,30 @@ class JWT:
             user_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
             print(user_data)
             with db.connect() as conn:
-                id = conn.execute(
-                    text(
-                        f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
+                existing_user = (
+                    conn.execute(
+                        text(
+                            f"""SELECT * FROM users WHERE user_email = \"{user_data.get("data").get("user_email")}\""""
+                        )
                     )
+                    .mappings()
+                    .first()
                 )
-            return jsonify({"success": True, "message": "You are verified"}), 200
+
+                print(existing_user)
+
+                if existing_user:
+                    raise UserDefinedExc(403, "Session Expired")
+                else:
+                    id = conn.execute(
+                        text(
+                            f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
+                        )
+                    )
+                    return (
+                        jsonify({"success": True, "message": "You are verified"}),
+                        200,
+                    )
         except (
             exceptions.ExpiredSignatureError,
             exceptions.InvalidSignatureError,
@@ -163,5 +206,123 @@ class JWT:
                 or isinstance(e, exceptions.InvalidTokenError)
             ):
                 return jsonify({"success": False, "message": "Invalid Token"}), 401
+            elif isinstance(e, UserDefinedExc):
+                return jsonify({"success": False, "message": e.args[0]}), e.code
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
+
+    def check_token(self, token: str):
+        return token
+
+
+class Auth_Changes(Mail, Main):
+    def send_pass_mail(self, email):
+        try:
+            verify_email = self.verify("email", email)
+            if verify_email:
+                with db.connect() as conn:
+                    existing_user = (
+                        conn.execute(
+                            text(
+                                f"""SELECT  * FROM users WHERE user_email = \"{email}\" LIMIT 1"""
+                            )
+                        )
+                        .mappings()
+                        .first()
+                    )
+
+                    if existing_user:
+                        data_token = encode(
+                            {
+                                "data": {"id": existing_user.get("user_id")},
+                                "exp": datetime.utcnow() + timedelta(minutes=2),
+                            },
+                            getenv("JWT_KEY"),
+                        )
+
+                        self.send_mail(
+                            "UShare Password Reset",
+                            recipients=[email],
+                            token=data_token,
+                            type="password",
+                        )
+
+                        return (
+                            jsonify(
+                                {
+                                    "success": True,
+                                    "message": "Reset Link is sent to your email.",
+                                }
+                            ),
+                            200,
+                        )
+
+            else:
+                raise UserDefinedExc(400, "Email pattern not matched!")
+        except (exc.SQLAlchemyError, UserDefinedExc) as e:
+            if isinstance(e, UserDefinedExc):
+                return jsonify({"success": False, "message": e.args[0]}), e.code
+            if isinstance(e, exc.SQLAlchemyError):
+                return jsonify({"success": False, "message": "Database Error"}), 503
+            else:
+                return jsonify({"success": False, "message": "Server Error"}), 500
+
+    def reset_pass(self, token: str, new_pass: str):
+        try:
+            verify_pass = self.verify("password", new_pass)
+            if verify_pass:
+                user_id = (
+                    decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
+                    .get("data")
+                    .get("id")
+                )
+                with db.connect() as conn:
+                    conn.execute(
+                        text(
+                            f"""UPDATE users SET user_password = \"{generate_password_hash(new_pass)}\" WHERE user_id = {user_id}"""
+                        )
+                    )
+                    return (
+                        jsonify(
+                            {
+                                "success": True,
+                                "message": "Password has been changed successfully!",
+                            }
+                        ),
+                        200,
+                    )
+            else:
+                raise UserDefinedExc(403, "Password pattern not matched!")
+        except (
+            exc.SQLAlchemyError,
+            exceptions.ExpiredSignatureError,
+            exceptions.InvalidSignatureError,
+            exceptions.InvalidTokenError,
+            Exception,
+        ) as e:
+            if isinstance(e, UserDefinedExc):
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": e.args[0],
+                        }
+                    ),
+                    e.code,
+                )
+            elif (
+                isinstance(e, exceptions.ExpiredSignatureError)
+                or isinstance(e, exceptions.InvalidSignatureError)
+                or isinstance(e, exceptions.InvalidTokenError)
+            ):
+                return jsonify({"success": False, "message": "Invalid Token"}), 401
+            else:
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": "Server Error! Cannot change password now.",
+                        }
+                    ),
+                    503,
+                )
