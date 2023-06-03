@@ -1,19 +1,43 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { context } from "../context";
 import { Link } from "react-router-dom";
+import { login } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
+  const globalVal = useContext(context);
+  const navigation = useNavigate();
+
   const password = useRef();
   const email = useRef();
-  const [userEmail, setUserEmail] = useState();
-  const [userPassword, setUserPassword] = useState();
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
   useEffect(() => {
     setSwitchPos("left-0");
     setSwitchShow(true);
   }, []);
 
+  const loginSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Login");
+    if (email.current.value) {
+      if (password.current.value) {
+        const data = await login(email.current.value, password.current.value);
+        if (data.success) navigation("/");
+        globalVal.triggerAlert(data.message);
+      } else {
+        password.current.classList.remove("form-field-empty-warn");
+        password.current.classList.add("form-field-empty-warn");
+      }
+    } else {
+      email.current.classList.remove("form-field-empty-warn");
+      email.current.classList.add("form-field-empty-warn");
+    }
+  };
+
   return (
-    <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+    <form className="flex flex-col gap-5">
       <input
         type="text"
         name="email"
@@ -23,6 +47,10 @@ const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
         value={userEmail}
         onChange={(e) => setUserEmail(e.target.value)}
         ref={email}
+        onAnimationEnd={(e) => {
+          e.preventDefault();
+          e.target.classList.remove("form-field-empty-warn");
+        }}
       />
       <input
         type="password"
@@ -33,6 +61,10 @@ const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
         value={userPassword}
         onChange={(e) => setUserPassword(e.target.value)}
         ref={password}
+        onAnimationEnd={(e) => {
+          e.preventDefault();
+          e.target.classList.remove("form-field-empty-warn");
+        }}
       />
       <div className="auth-form-elem flex gap-2">
         <input
@@ -45,11 +77,16 @@ const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
         />
         <label htmlFor="showPass">Show Password</label>
       </div>
-      <button className="auth-btn">Login</button>
+      <button className="auth-btn" onClick={loginSubmit}>
+        Login
+      </button>
       <button
         className="auth-btn flex justify-between items-center"
         style={{
           backgroundColor: "WindowText",
+        }}
+        onClick={(e) => {
+          e.preventDefault();
         }}
       >
         <img src="/images/google-icon.png" alt="google icon" className="w-7" />

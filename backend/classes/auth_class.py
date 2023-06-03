@@ -38,7 +38,7 @@ class Login(Main):
                             .first()
                         )
                         if existing_user:
-                            print(existing_user)
+                            # print(existing_user)
                             if check_password_hash(
                                 existing_user.get("user_password"), self.user_password
                             ):
@@ -74,8 +74,10 @@ class Login(Main):
                                     httponly=True,
                                     samesite=None,
                                     max_age=(3600 * 24 * 30),
+                                    path="/",
                                 )
                                 return resp
+
                             else:
                                 raise UserDefinedExc(401, "Password Incorrect!")
                         else:
@@ -117,7 +119,7 @@ class Signup(Main, Mail):
                             .mappings()
                             .all()
                         )
-                        print(existing_user)
+                        # print(existing_user)
                         if existing_user:
                             raise UserDefinedExc(403, "User Already Exists!")
                         if verify_pass:
@@ -167,7 +169,7 @@ class JWT:
     def verify_user(self, token: str):
         try:
             user_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
-            print(user_data)
+            # print(user_data)
             with db.connect() as conn:
                 existing_user = (
                     conn.execute(
@@ -179,7 +181,7 @@ class JWT:
                     .first()
                 )
 
-                print(existing_user)
+                # print(existing_user)
 
                 if existing_user:
                     raise UserDefinedExc(403, "Session Expired")

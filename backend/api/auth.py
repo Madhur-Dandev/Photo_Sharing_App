@@ -1,4 +1,4 @@
-from flask import Blueprint, request as req, jsonify
+from flask import Blueprint, request as req, jsonify, make_response as res
 from classes.auth_class import Login, Signup, JWT, Auth_Changes
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -7,7 +7,7 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 @auth.post("/login")
 def login():
     data = req.json
-    print(data)
+    # print(data)
     user_login = Login(data.get("user_id"), data.get("user_password"))
     return user_login.activity()
 

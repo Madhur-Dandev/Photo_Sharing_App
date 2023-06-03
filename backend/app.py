@@ -11,9 +11,9 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.register_blueprint(api)
 app.config["SECRET_KEY"] = getenv("JWT_KEY")
 app.config["SESSION_COOKIE_SECURE"] = True
+app.register_blueprint(api)
 app.config.update(
     MAIL_SERVER="smtp.gmail.com",
     MAIL_USERNAME=getenv("EMAIL_USER"),
@@ -35,45 +35,11 @@ def index():
     return "<h1>Home</h1>"
 
 
-@app.route("/set_cookie", methods=["GET"])
-def set_cookie():
-    # Get the client's unique identifier, such as user ID or session ID
-    user_id = "11"
-
-    # Create a response object
-    response = res("Cookie has been set!")
-
-    # Set the secure cookie with the client's identifier
-    response.set_cookie(
-        "my_cookie",
-        value=user_id,
-        secure=True,
-        httponly=True,
-        samesite=None,
-        max_age=(10),
-    )
-
-    return response
-
-
-@app.route("/check_cookie", methods=["GET"])
-def check_cookie():
-    # Check if the secure cookie is present in the client's request
-    user_id = req.cookies.get("my_cookie")
-    print(user_id)
-
-    if user_id:
-        return f"Hello, user {user_id}!"
-    else:
-        return "Secure cookie not found!"
-
-
-@app.route("/delete_cookie", methods=["GET"])
-def delete_cookie():
-    # Check if the secure cookie is present in the client's request
-    resp = res("Cookie deleted")
-    resp.delete_cookie("my_cookie", secure=True, httponly=True, samesite=None)
-
+@app.get("/check")
+def check():
+    print(req.cookies)
+    resp = res(f"Cookie : {req.cookies.get('refresh_token')} deleted")
+    resp.delete_cookie("refresh_token", httponly=True, secure=True, samesite=None)
     return resp
 
 
