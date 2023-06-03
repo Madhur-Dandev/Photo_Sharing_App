@@ -8,8 +8,17 @@ import { Link } from "react-router-dom";
 const Auth = () => {
   const { type } = useParams();
   const switchElem = useRef();
+  const authSection = useRef();
   const [switchShow, setSwitchShow] = useState(true);
   const [switchPos, setSwitchPos] = useState("");
+
+  const triggerPulse = () => {
+    authSection.current.classList.add("animate-pulse");
+  };
+
+  const removePulse = () => {
+    authSection.current.classList.remove("animate-pulse");
+  };
 
   return (
     <div className="flex h-screen relative bg-slate-600">
@@ -20,7 +29,10 @@ const Auth = () => {
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="flex flex-col justify-center items-center w-full gap-5 form-section z-20">
+      <div
+        className="flex flex-col justify-center items-center w-full gap-5 form-section z-20"
+        ref={authSection}
+      >
         <h1 className="font-bold text-2xl sm:text-4xl">
           {type == "login" ? "Welcome Back! - Login" : "New? - Signup"}
         </h1>
@@ -29,16 +41,24 @@ const Auth = () => {
             <LoginForm
               setSwitchPos={setSwitchPos}
               setSwitchShow={setSwitchShow}
+              triggerPulse={triggerPulse}
+              removePulse={removePulse}
             />
           )}
           {type === "signup" && (
             <SignupForm
               setSwitchPos={setSwitchPos}
               setSwitchShow={setSwitchShow}
+              triggerPulse={triggerPulse}
+              removePulse={removePulse}
             />
           )}
           {type === "forgetPass" && (
-            <ForgetPassForm setSwitchShow={setSwitchShow} />
+            <ForgetPassForm
+              setSwitchShow={setSwitchShow}
+              triggerPulse={triggerPulse}
+              removePulse={removePulse}
+            />
           )}
         </div>
         <div className="flex bg-slate-900 rounded-full relative">

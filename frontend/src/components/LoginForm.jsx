@@ -4,7 +4,12 @@ import { Link } from "react-router-dom";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
-const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
+const LoginForm = ({
+  setSwitchPos,
+  setSwitchShow,
+  triggerPulse,
+  removePulse,
+}) => {
   const globalVal = useContext(context);
   const navigation = useNavigate();
 
@@ -21,10 +26,16 @@ const LoginForm = ({ setSwitchPos, setSwitchShow }) => {
   const loginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login");
+    triggerPulse();
     if (email.current.value) {
       if (password.current.value) {
         const data = await login(email.current.value, password.current.value);
-        if (data.success) navigation("/");
+        if (data.success) {
+          navigation("/");
+          localStorage.setItem("access_token", data.access_token);
+          localStorage.setItem("username", data.username);
+          removePulse();
+        }
         globalVal.triggerAlert(data.message);
       } else {
         password.current.classList.remove("form-field-empty-warn");

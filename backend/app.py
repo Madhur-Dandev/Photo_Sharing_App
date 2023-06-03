@@ -38,9 +38,7 @@ def index():
 @app.get("/check")
 def check():
     print(req.cookies)
-    resp = res(f"Cookie : {req.cookies.get('refresh_token')} deleted")
-    resp.delete_cookie("refresh_token", httponly=True, secure=True, samesite=None)
-    return resp
+    return "Done"
 
 
 @app.errorhandler(404)

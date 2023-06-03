@@ -3,7 +3,12 @@ import { context } from "../context";
 import { signup } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
-const SignupForm = ({ setSwitchPos, setSwitchShow }) => {
+const SignupForm = ({
+  setSwitchPos,
+  setSwitchShow,
+  triggerPulse,
+  removePulse,
+}) => {
   const globalVal = useContext(context);
   const navigation = useNavigate();
 
@@ -21,6 +26,7 @@ const SignupForm = ({ setSwitchPos, setSwitchShow }) => {
 
   const submitSignup = async (e) => {
     e.preventDefault();
+    triggerPulse();
 
     if (name.current.value) {
       if (email.current.value) {
@@ -30,7 +36,10 @@ const SignupForm = ({ setSwitchPos, setSwitchShow }) => {
             email.current.value,
             password.current.value
           );
-          if (data.success) navigation("/auth/login");
+          if (data.success) {
+            navigation("/auth/login");
+            removePulse();
+          }
           globalVal.triggerAlert(data.message);
         } else {
           password.current.classList.remove("form-field-empty-warn");

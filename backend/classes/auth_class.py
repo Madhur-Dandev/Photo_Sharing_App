@@ -62,6 +62,7 @@ class Login(Main):
                                         {
                                             "success": True,
                                             "message": "Login Successfully",
+                                            "username": existing_user.get("user_name"),
                                             "access_token": access_token,
                                         }
                                     ),
@@ -214,7 +215,34 @@ class JWT:
                 return jsonify({"success": False, "message": "Server Error"}), 500
 
     def check_token(self, token: str):
-        return token
+        try:
+            user_id = decode(token, getenv("JET_KEY"), algorithms=["HS256"])
+            with db.connect() as conn:
+                existing_user = (
+                    conn.execute(
+                        text(f"""SELECT * FROM users WHERE user_id = {user_id}""")
+                    )
+                    .mappings()
+                    .first()
+                )
+                if existing_user:
+                    return {
+                        "user_id": user_id,
+                        "user_name": existing_user.get("user_name"),
+                        "success": True,
+                    }
+                else:
+                    return {"success": False}
+
+        except (
+            exceptions.ExpiredSignatureError,
+            exceptions.InvalidSignatureError,
+            exceptions.InvalidTokenError,
+            exc.SQLAlchemyError,
+            Exception,
+        ) as e:
+            print(e)
+            return {"success": False}
 
 
 class Auth_Changes(Mail, Main):

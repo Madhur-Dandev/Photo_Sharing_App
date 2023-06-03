@@ -36,3 +36,10 @@ def verify_user():
     data = req.args
     jwt = JWT()
     return jwt.verify_user(data.get("token"))
+
+
+@auth.get("/check_loggedin/<string:token>")
+def check_loggedin(token):
+    jwt = JWT()
+    result = jwt.check_token(token)
+    return jsonify(result), 200 if result.get("success") else 401

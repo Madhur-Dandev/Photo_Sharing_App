@@ -33,6 +33,10 @@ const Global = ({ children }) => {
     }, 1);
   };
 
+  const checkLogin = () => {
+    const username = localStorage.getItem("username");
+  };
+
   return (
     <context.Provider
       value={{
