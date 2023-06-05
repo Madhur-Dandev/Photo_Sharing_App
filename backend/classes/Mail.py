@@ -39,7 +39,7 @@ class Mail:
                 <h1 style="font-size: 24px; margin-bottom: 30px; text-align: center;">Password Reset</h1>
                 <p style="font-size: 16px; margin-bottom: 20px;">Dear User,</p>
                 <p style="font-size: 16px; margin-bottom: 20px;">We have received a request to reset your password. To proceed with the password reset, please click the button below:</p>
-                <p style="text-align: center; margin-bottom: 20px;"><a href="{req.root_url}api/auth/pass_reset?token={token}" style="display: inline-block; background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px;">Reset Password</a></p>
+                <p style="text-align: center; margin-bottom: 20px;"><a href="{req.root_url}api/auth/passChangePage/{token}" style="display: inline-block; background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px;">Reset Password</a></p>
                 <p style="font-size: 16px; margin-bottom: 20px;">If you didn't request a password reset, please ignore this email. Your account is still secure.</p>
                 <p style="font-size: 16px; margin-bottom: 20px;">Thank you,</p>
                 <p style="font-size: 16px; margin-bottom: 20px;">UShare</p>"""

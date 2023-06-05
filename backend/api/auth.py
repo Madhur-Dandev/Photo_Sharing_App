@@ -1,4 +1,10 @@
-from flask import Blueprint, request as req, jsonify, make_response as res
+from flask import (
+    Blueprint,
+    request as req,
+    jsonify,
+    make_response as res,
+    render_template,
+)
 from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -23,6 +29,11 @@ def signup():
 def request_pass_change():
     data = Auth_Changes()
     return data.send_pass_mail(req.json.get("user_email"))
+
+
+@auth.get("/passChangePage/<string:token>")
+def passChangePage(token):
+    return render_template("pass_change.html", token=token, title="Change Pass")
 
 
 @auth.post("/change_pass")

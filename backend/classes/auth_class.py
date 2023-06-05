@@ -173,7 +173,6 @@ class JWT:
             user_data = self.decode_token(token)
             if not user_data.get("success"):
                 raise UserDefinedExc(401, "Invalid Token")
-            # print(user_data)
             with db.connect() as conn:
                 existing_user = (
                     conn.execute(
@@ -184,8 +183,6 @@ class JWT:
                     .mappings()
                     .first()
                 )
-
-                # print(existing_user)
 
                 if existing_user:
                     raise UserDefinedExc(403, "Session Expired")
@@ -317,7 +314,7 @@ class Logout(JWT):
             return jsonify({"success": False, "message": "Server Error"}), 503
 
 
-class Auth_Changes(Mail, Main):
+class Auth_Changes(Mail, Main, JWT):
     def send_pass_mail(self, email):
         try:
             verify_email = self.verify("email", email)
@@ -373,22 +370,22 @@ class Auth_Changes(Mail, Main):
         try:
             verify_pass = self.verify("password", new_pass)
             if verify_pass:
-                user_id = (
-                    decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
-                    .get("data")
-                    .get("id")
-                )
+                token_data = self.decode_token(token)
+                if not token_data.get("success"):
+                    if token_data.get("type") == 1:
+                        raise UserDefinedExc(401, "Invalid Token or Session Expire")
+
                 with db.connect() as conn:
                     conn.execute(
                         text(
-                            f"""UPDATE users SET user_password = \"{generate_password_hash(new_pass)}\" WHERE user_id = {user_id}"""
+                            f"""UPDATE users SET user_password = \"{generate_password_hash(new_pass)}\" WHERE user_id = {token_data.get("data").get("id")}"""
                         )
                     )
                     return (
                         jsonify(
                             {
                                 "success": True,
-                                "message": "Password has been changed successfully!",
+                                "message": "Password Changed! You can login now.",
                             }
                         ),
                         200,
@@ -397,11 +394,9 @@ class Auth_Changes(Mail, Main):
                 raise UserDefinedExc(403, "Password pattern not matched!")
         except (
             exc.SQLAlchemyError,
-            exceptions.ExpiredSignatureError,
-            exceptions.InvalidSignatureError,
-            exceptions.InvalidTokenError,
             Exception,
         ) as e:
+            print(e)
             if isinstance(e, UserDefinedExc):
                 return (
                     jsonify(
@@ -412,12 +407,6 @@ class Auth_Changes(Mail, Main):
                     ),
                     e.code,
                 )
-            elif (
-                isinstance(e, exceptions.ExpiredSignatureError)
-                or isinstance(e, exceptions.InvalidSignatureError)
-                or isinstance(e, exceptions.InvalidTokenError)
-            ):
-                return jsonify({"success": False, "message": "Invalid Token"}), 401
             else:
                 return (
                     jsonify(

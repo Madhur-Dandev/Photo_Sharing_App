@@ -34,8 +34,8 @@ const LoginForm = ({
           navigation("/");
           localStorage.setItem("access_token", data.access_token);
           localStorage.setItem("username", data.username);
-          removePulse();
         }
+        removePulse();
         globalVal.triggerAlert(data.message);
       } else {
         password.current.classList.remove("form-field-empty-warn");

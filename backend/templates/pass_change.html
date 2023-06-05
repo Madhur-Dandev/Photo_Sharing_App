@@ -17,8 +17,7 @@ block style %}
   const passFields = document.querySelectorAll(`input[type="password"]`);
   const errorMessage = document.querySelector("#errorMessage");
 
-  const data = {{data}}
-  const data2 = {{data2}}
+  const token = "{{token}}";
 
   passFields.forEach((elem) => {
     elem.addEventListener("animationend", (e) => {
@@ -27,7 +26,7 @@ block style %}
     });
   });
 
-  function validatePasswords() {
+  async function validatePasswords() {
     let password = document.getElementById("password").value;
     let confirmPassword = document.getElementById("confirmPassword").value;
     let errorMessage = document.getElementById("errorMessage");
@@ -46,8 +45,29 @@ block style %}
       passFields.forEach((elem) => {
         elem.classList.remove("error-animation");
       });
-      console.log(data + data2)
+
       // Reset password logic here
+      const resp = await fetch(
+        `http://localhost:5000/api/auth/change_pass?token=${token}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ new_password: password }),
+        }
+      );
+      const data = await resp.json();
+      console.log(data);
+      errorMessage.innerHTML = data.message;
+      console.log(errorMessage);
+      errorMessage.style.display = "block";
+      if (data.success) {
+        errorMessage.style.color = "#003b00";
+      } else {
+        errorMessage.style.color = "#dc3545";
+      }
     }
   }
 </script>
