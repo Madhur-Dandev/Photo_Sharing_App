@@ -1,5 +1,5 @@
 from flask import Blueprint, request as req, jsonify, make_response as res
-from classes.auth_class import Login, Signup, JWT, Auth_Changes
+from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -49,3 +49,9 @@ def check_loggedin(token):
         jsonify({k: v for k, v in result.items() if k != "user_id"}),
         200 if result.get("success") else 401,
     )
+
+
+@auth.get("/logout/<string:token>")
+def logout(token):
+    lgot = Logout()
+    return lgot.activity(token)

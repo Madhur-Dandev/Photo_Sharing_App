@@ -24,4 +24,15 @@ const signup = async (name, email, pass) => {
     return await resp.json();
 }
 
-export {login, signup}
+const logout = async () => {
+    if(localStorage.getItem("access_token")) {
+        const resp = await fetch(`http://localhost:5000/api/auth/logout/${localStorage.getItem("access_token")}`, {
+            credentials: "include",
+        });
+        const data = await resp.json();
+        return data;
+    }
+    return {"success" : false, "message" : "Unauthorized Action"}
+}
+
+export {login, signup, logout};

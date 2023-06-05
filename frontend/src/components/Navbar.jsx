@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { context } from "../context";
 import { useContext, useRef, useState, useEffect, useMemo } from "react";
+import { logout } from "../api/auth";
 
 const Navbar = () => {
   const globalVal = useContext(context);
@@ -27,6 +28,18 @@ const Navbar = () => {
   useMemo(() => {
     globalVal.checkLogin();
   }, []);
+
+  const handleLogout = async () => {
+    const data = await logout();
+    if (data.success) {
+      globalVal.setLoggedin(false);
+      globalVal.setUsername("");
+      localStorage.removeItem("username");
+      localStorage.removeItem("access_token");
+    }
+
+    globalVal.triggerAlert(data.message);
+  };
 
   // const handleShowSidebar = () => {
   //   console.log("hi");
@@ -149,10 +162,7 @@ const Navbar = () => {
             <Link to="/upload" className="logged-user-opt">
               Upload Image
             </Link>
-            <p
-              onClick={() => console.log("logout")}
-              className="logged-user-opt"
-            >
+            <p onClick={handleLogout} className="logged-user-opt">
               Logout
             </p>
           </div>

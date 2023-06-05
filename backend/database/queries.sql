@@ -4,3 +4,8 @@ CREATE TABLE users (
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(500) NOT NULL,
 );
+
+CREATE TABLE restricted_token (
+    token_id INT PRIMARY KEY AUTO_INCREMENT,
+    token VARCHAR(500) NOT NULL
+);
