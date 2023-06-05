@@ -17,6 +17,8 @@ const Global = ({ children }) => {
   const [loggedin, setLoggedin] = useState(false);
   const [username, setUsername] = useState("");
 
+  const checkLogginFlag = 0;
+
   const triggerAlert = (msg) => {
     /**
      * This function is use to trigger the alert from anywhere in the application.
@@ -33,8 +35,32 @@ const Global = ({ children }) => {
     }, 1);
   };
 
-  const checkLogin = () => {
-    const username = localStorage.getItem("username");
+  const checkLogin = async () => {
+    const access_token = localStorage.getItem("access_token");
+
+    if (access_token) {
+      const resp = await fetch(
+        `http://localhost:5000/api/auth/check_loggedin/${access_token}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      const data = await resp.json();
+      console.log(data);
+      if (resp.ok) {
+        if (data.success) {
+          setLoggedin(true);
+          setUsername(data.user_name);
+          if (data.token) {
+            localStorage.setItem("access_token", data.token);
+          }
+        }
+      }
+    } else {
+      setLoggedin(false);
+      setUsername("");
+    }
   };
 
   return (
@@ -59,6 +85,7 @@ const Global = ({ children }) => {
         setLoggedin,
         username,
         setUsername,
+        checkLogin,
       }}
     >
       {/* children will be the element that'd be wrapped up inside of this element */}

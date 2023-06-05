@@ -40,6 +40,12 @@ def verify_user():
 
 @auth.get("/check_loggedin/<string:token>")
 def check_loggedin(token):
+    refresh_token = req.cookies.get("refresh_token")
+    print(refresh_token)
     jwt = JWT()
-    result = jwt.check_token(token)
-    return jsonify(result), 200 if result.get("success") else 401
+    result = jwt.check_token(token, refresh_token)
+    print(result, "47")
+    return (
+        jsonify({k: v for k, v in result.items() if k != "user_id"}),
+        200 if result.get("success") else 401,
+    )

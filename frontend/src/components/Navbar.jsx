@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { context } from "../context";
-import { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useRef, useState, useEffect, useMemo } from "react";
 
 const Navbar = () => {
   const globalVal = useContext(context);
@@ -23,6 +23,10 @@ const Navbar = () => {
       ball.current.classList.remove("left-nav-end");
     }
   }, [globalVal.ballPos]);
+
+  useMemo(() => {
+    globalVal.checkLogin();
+  }, []);
 
   // const handleShowSidebar = () => {
   //   console.log("hi");

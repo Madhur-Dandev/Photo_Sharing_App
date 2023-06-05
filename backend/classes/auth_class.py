@@ -170,6 +170,9 @@ class JWT:
     def verify_user(self, token: str):
         try:
             user_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
+            user_data = self.decode_token(token)
+            if not user_data.get("success"):
+                raise UserDefinedExc(401, "Invalid Token")
             # print(user_data)
             with db.connect() as conn:
                 existing_user = (
@@ -196,38 +199,43 @@ class JWT:
                         jsonify({"success": True, "message": "You are verified"}),
                         200,
                     )
-        except (
-            exceptions.ExpiredSignatureError,
-            exceptions.InvalidSignatureError,
-            exceptions.InvalidTokenError,
-            Exception,
-        ) as e:
-            print(e)
-            if (
-                isinstance(e, exceptions.ExpiredSignatureError)
-                or isinstance(e, exceptions.InvalidSignatureError)
-                or isinstance(e, exceptions.InvalidTokenError)
-            ):
-                return jsonify({"success": False, "message": "Invalid Token"}), 401
-            elif isinstance(e, UserDefinedExc):
+        except (Exception,) as e:
+            print(e, "203")
+            if isinstance(e, UserDefinedExc):
                 return jsonify({"success": False, "message": e.args[0]}), e.code
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
 
-    def check_token(self, token: str):
+    def check_token(self, token: str, refresh_token: str):
         try:
-            user_id = decode(token, getenv("JET_KEY"), algorithms=["HS256"])
+            token_data = self.decode_token(token)
+            print(token_data, "212")
+            if not token_data.get("success"):
+                if token_data.get("type") == 1:
+                    result = self.generate_new_token(refresh_token)
+                    print(result, "216")
+                    if result.get("success"):
+                        result_dict = {"token": result.get("token")}
+                        result_dict.update(
+                            self.check_token(result.get("token"), refresh_token)
+                        )
+                        return result_dict
+
+                return {"success": False}
+
             with db.connect() as conn:
                 existing_user = (
                     conn.execute(
-                        text(f"""SELECT * FROM users WHERE user_id = {user_id}""")
+                        text(
+                            f"""SELECT * FROM users WHERE user_id = {token_data.get("data").get("id")}"""
+                        )
                     )
                     .mappings()
                     .first()
                 )
                 if existing_user:
                     return {
-                        "user_id": user_id,
+                        "user_id": token_data.get("data").get("id"),
                         "user_name": existing_user.get("user_name"),
                         "success": True,
                     }
@@ -235,14 +243,55 @@ class JWT:
                     return {"success": False}
 
         except (
-            exceptions.ExpiredSignatureError,
-            exceptions.InvalidSignatureError,
-            exceptions.InvalidTokenError,
             exc.SQLAlchemyError,
             Exception,
         ) as e:
-            print(e)
+            print(e, "246")
+
             return {"success": False}
+
+    def generate_new_token(self, token: str):
+        try:
+            token_data = self.decode_token(token)
+            print(token_data, "257")
+            if token_data.get("success"):
+                return {
+                    "success": True,
+                    "token": encode(
+                        {
+                            "data": token_data.get("data"),
+                            "exp": datetime.utcnow() + timedelta(minutes=15),
+                        },
+                        getenv("JWT_KEY"),
+                    ),
+                }
+        except Exception as e:
+            print(e, "277")
+            return {"success": False}
+
+    def decode_token(self, token):
+        try:
+            token_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
+            print(token_data, "283")
+            return {
+                "success": True,
+                "data": token_data.get("data"),
+            }
+        except (
+            exceptions.ExpiredSignatureError,
+            exceptions.InvalidSignatureError,
+            exceptions.InvalidTokenError,
+            Exception,
+        ) as e:
+            result_dict = {"success": False}
+            print(e, "295")
+            if isinstance(e, exceptions.ExpiredSignatureError):
+                result_dict.update({"type": 1})
+            elif isinstance(e, exceptions.InvalidTokenError):
+                result_dict.update({"type": 2})
+            else:
+                result_dict.update({"type": 3})
+            return result_dict
 
 
 class Auth_Changes(Mail, Main):
