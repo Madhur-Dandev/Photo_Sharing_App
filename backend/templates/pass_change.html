@@ -1,0 +1,54 @@
+{% extends 'base.html' %} {% block title %}{{title}}{% endblock title %} {%
+block style %}
+<link
+  rel="stylesheet"
+  href="{{url_for('static', filename='css/pass_change.css')}}"
+/>
+{% endblock style %} {% block content %}
+<div class="container">
+  <h1>Reset Password</h1>
+  <input type="password" id="password" placeholder="New Password" />
+  <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+  <p class="error-message" id="errorMessage">Passwords do not match</p>
+  <button onclick="validatePasswords()">Reset</button>
+</div>
+
+<script>
+  const passFields = document.querySelectorAll(`input[type="password"]`);
+  const errorMessage = document.querySelector("#errorMessage");
+
+  const data = {{data}}
+  const data2 = {{data2}}
+
+  passFields.forEach((elem) => {
+    elem.addEventListener("animationend", (e) => {
+      e.preventDefault();
+      e.target.classList.remove("error-animation");
+    });
+  });
+
+  function validatePasswords() {
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
+    let errorMessage = document.getElementById("errorMessage");
+
+    passFields.forEach((elem) => {
+      elem.classList.remove("error-animation");
+    });
+
+    if (password !== confirmPassword) {
+      errorMessage.style.display = "block";
+      passFields.forEach((elem) => {
+        elem.classList.add("error-animation");
+      });
+    } else {
+      errorMessage.style.display = "none";
+      passFields.forEach((elem) => {
+        elem.classList.remove("error-animation");
+      });
+      console.log(data + data2)
+      // Reset password logic here
+    }
+  }
+</script>
+{% endblock content %}

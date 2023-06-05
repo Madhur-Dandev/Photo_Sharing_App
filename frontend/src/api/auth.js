@@ -35,4 +35,17 @@ const logout = async () => {
     return {"success" : false, "message" : "Unauthorized Action"}
 }
 
-export {login, signup, logout};
+const changePassword = async (email) => {
+    const resp = await fetch("http://localhost:5000/api/auth/request_pass_change", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body : JSON.stringify({user_email : email})
+    });
+
+    const data = await resp.json();
+    return data;
+}
+
+export {login, signup, logout, changePassword};

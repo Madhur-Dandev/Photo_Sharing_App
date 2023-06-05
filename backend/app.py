@@ -1,4 +1,4 @@
-from flask import Flask, request as req, make_response as res
+from flask import Flask, request as req, render_template
 from Google import service
 from api import api
 from utility.mailConfig import mail
@@ -39,6 +39,11 @@ def index():
 def check():
     print(req.cookies)
     return "Done"
+
+
+@app.get("/display")
+def display():
+    return render_template("pass_change.html", data=15, data2=15, title="Change Pass")
 
 
 @app.errorhandler(404)
