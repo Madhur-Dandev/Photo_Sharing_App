@@ -1,11 +1,11 @@
-const login = async (email, pass) => {
-    const resp = await fetch("http://localhost:5000/api/auth/login", {
+const login = async (payload, google=false, g_id) => {
+    const resp = await fetch(`http://localhost:5000/api/auth/login${google ? `?google=true&g_id=${g_id}` : ""}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({user_id : email, user_password : pass})
+        body: JSON.stringify(payload)
     });
 
     return await resp.json();
@@ -48,4 +48,25 @@ const changePassword = async (email) => {
     return data;
 }
 
-export {login, signup, logout, changePassword};
+const handleGoogleLogin = (callback) => {
+    window.google.accounts.id.initialize({
+      client_id: "145775279537-saikh4s08qossg5g45ngpqti7r0idhoo.apps.googleusercontent.com",
+      callback: callback,
+    });
+    window.google.accounts.id.prompt();
+};
+
+// const googleLogin = async (useremail) => {
+//     const resp = await fetch("http://localhost:5000/api/auth/login", {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         credentials: "include",
+//         body: JSON.stringify({user_id : email}) 
+//     });
+
+//     return await resp.json();
+// }
+
+export {login, signup, logout, changePassword, handleGoogleLogin};

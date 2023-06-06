@@ -3,8 +3,7 @@ from Google import service
 from api import api
 from utility.mailConfig import mail
 from os import getenv
-from datetime import datetime, timedelta
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv()

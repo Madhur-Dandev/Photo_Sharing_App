@@ -15,157 +15,6 @@ import re
 load_dotenv()
 
 
-class Login(Main):
-    def __init__(self, user_id, user_password) -> None:
-        self.user_id = user_id
-        self.user_password = user_password
-
-    def activity(self):
-        verify_email = self.verify("email", self.user_id)
-        verify_pass = self.verify("password", self.user_password)
-
-        try:
-            if verify_email:
-                if verify_pass:
-                    with db.connect() as conn:
-                        existing_user = (
-                            conn.execute(
-                                text(
-                                    f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
-                                )
-                            )
-                            .mappings()
-                            .first()
-                        )
-                        if existing_user:
-                            # print(existing_user)
-                            if check_password_hash(
-                                existing_user.get("user_password"), self.user_password
-                            ):
-                                access_token = encode(
-                                    {
-                                        "data": {"id": existing_user.get("user_id")},
-                                        "exp": datetime.utcnow()
-                                        + timedelta(minutes=15),
-                                    },
-                                    getenv("JWT_KEY"),
-                                )
-                                refresh_token = encode(
-                                    {
-                                        "data": {"id": existing_user.get("user_id")},
-                                        "exp": datetime.utcnow() + timedelta(days=5),
-                                    },
-                                    getenv("JWT_KEY"),
-                                )
-                                resp = res(
-                                    jsonify(
-                                        {
-                                            "success": True,
-                                            "message": "Login Successfully",
-                                            "username": existing_user.get("user_name"),
-                                            "access_token": access_token,
-                                        }
-                                    ),
-                                    200,
-                                )
-                                resp.set_cookie(
-                                    "refresh_token",
-                                    refresh_token,
-                                    secure=True,
-                                    httponly=True,
-                                    samesite=None,
-                                    max_age=(3600 * 24 * 30),
-                                    path="/",
-                                )
-                                return resp
-
-                            else:
-                                raise UserDefinedExc(401, "Password Incorrect!")
-                        else:
-                            raise UserDefinedExc(401, "User Not Found!")
-                else:
-                    raise UserDefinedExc(400, "Password Pattern not matched")
-            else:
-                raise UserDefinedExc(400, "Invalid Email Address")
-        except (exc.SQLAlchemyError, UserDefinedExc) as e:
-            if isinstance(e, exc.SQLAlchemyError):
-                return jsonify({"success": False, "message": "Database Error"}), 503
-            elif isinstance(e, UserDefinedExc):
-                return jsonify({"success": False, "message": e.args[0]}), e.code
-            else:
-                return jsonify({"success": False, "message": "Server Error"}), 500
-
-
-class Signup(Main, Mail):
-    def __init__(self, user_data) -> None:
-        self.user_name = user_data.get("user_name")
-        self.user_email = user_data.get("user_email")
-        self.user_password = user_data.get("user_password")
-
-    def activity(self):
-        verify_name = self.verify("name", self.user_name)
-        verify_email = self.verify("email", self.user_email)
-        verify_pass = self.verify("password", self.user_password)
-
-        try:
-            if verify_name:
-                if verify_email:
-                    with db.connect() as conn:
-                        existing_user = (
-                            conn.execute(
-                                text(
-                                    f"""SELECT * FROM users WHERE user_email = \"{self.user_email}\" LIMIT 1"""
-                                )
-                            )
-                            .mappings()
-                            .all()
-                        )
-                        # print(existing_user)
-                        if existing_user:
-                            raise UserDefinedExc(403, "User Already Exists!")
-                        if verify_pass:
-                            data_token = encode(
-                                {
-                                    "data": {
-                                        "user_name": self.user_name,
-                                        "user_email": self.user_email,
-                                        "user_password": generate_password_hash(
-                                            self.user_password
-                                        ),
-                                    },
-                                    "exp": datetime.utcnow() + timedelta(minutes=2),
-                                },
-                                getenv("JWT_KEY"),
-                            )
-                            self.send_mail(
-                                "UShare Registration Verification",
-                                recipients=[self.user_email],
-                                token=data_token,
-                                type="verify",
-                            )
-
-                            return jsonify(
-                                {
-                                    "success": True,
-                                    "message": "Check your mail inbox for verification.",
-                                }
-                            )
-                        else:
-                            raise UserDefinedExc(400, "Password Pattern Not Matched!")
-                else:
-                    raise UserDefinedExc(400, "Invalid Email Address")
-            else:
-                raise UserDefinedExc(400, "Name length must be greater than 4")
-
-        except UserDefinedExc as e:
-            if isinstance(e, UserDefinedExc):
-                return jsonify({"success": False, "message": e.args[0]}), e.code
-            elif isinstance(e, exc.SQLAlchemyError):
-                return jsonify({"success": False, "message": "Database Error"}), 503
-            else:
-                return jsonify({"success": False, "message": "Server Error"}), 500
-
-
 class JWT:
     def verify_user(self, token: str):
         try:
@@ -289,6 +138,188 @@ class JWT:
             else:
                 result_dict.update({"type": 3})
             return result_dict
+
+    @staticmethod
+    def generate_token(payload: dict = {}, exp: int = 0):
+        return encode({"data": payload, "exp": exp}, getenv("JWT_KEY"))
+
+
+class Login(Main, JWT):
+    def __init__(
+        self, user_id, user_password: str = "", is_google: bool = False, g_id: int = 0
+    ) -> None:
+        self.user_id = user_id
+        self.user_password = user_password
+        self.is_google = is_google
+        self.g_id = g_id
+
+    def activity(self):
+        verify_email = self.verify("email", self.user_id)
+        verify_pass = self.verify("password", self.user_password)
+
+        try:
+            if verify_email:
+                existing_user = self.check_user()
+                if existing_user.get("success"):
+                    if existing_user.get("user_id"):
+                        if self.user_password != "":
+                            if (
+                                not check_password_hash(
+                                    existing_user.get("user_password"),
+                                    self.user_password,
+                                )
+                                or not verify_pass
+                            ):
+                                raise UserDefinedExc(401, "Password Incorrect!")
+                        else:
+                            if (
+                                not self.is_google
+                                or not existing_user.get("g_id") == self.g_id
+                            ):
+                                raise UserDefinedExc(401, "Unauthorized")
+                        return self.generateResponse(
+                            existing_user.get("user_id"), existing_user.get("user_name")
+                        )
+                    else:
+                        raise UserDefinedExc(401, "User Not Found!")
+                else:
+                    raise UserDefinedExc(500, "Database Error!")
+            else:
+                raise UserDefinedExc(400, "Invalid Email Address")
+        except UserDefinedExc as e:
+            if isinstance(e, UserDefinedExc):
+                return jsonify({"success": False, "message": e.args[0]}), e.code
+            else:
+                return jsonify({"success": False, "message": "Server Error"}), 500
+
+    def check_user(self):
+        try:
+            with db.connect() as conn:
+                user_data = dict(
+                    conn.execute(
+                        text(
+                            f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
+                        )
+                    )
+                    .mappings()
+                    .first()
+                )
+
+                print(self.user_id)
+                user_data.update({"success": True})
+                return user_data
+
+        except (exc.SQLAlchemyError, Exception) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                return {"success": False, "message": "Database Error"}
+            else:
+                return {"success": False, "message": "Server Error"}
+
+    def generateResponse(self, user_id, user_name):
+        try:
+            access_token = JWT.generate_token(
+                {"id": user_id},
+                int((datetime.utcnow() + timedelta(minutes=15)).timestamp()),
+            )
+            refresh_token = JWT.generate_token(
+                {"id": user_id},
+                int((datetime.utcnow() + timedelta(days=5)).timestamp()),
+            )
+            resp = res(
+                jsonify(
+                    {
+                        "success": True,
+                        "message": "Login Successfully",
+                        "username": user_name,
+                        "access_token": access_token,
+                    }
+                ),
+                200,
+            )
+            resp.set_cookie(
+                "refresh_token",
+                refresh_token,
+                secure=True,
+                httponly=True,
+                samesite=None,
+                max_age=(3600 * 24 * 30),
+                path="/",
+            )
+            return resp
+
+        except Exception as e:
+            return jsonify({"success": True}), 500
+
+
+class Signup(Main, Mail):
+    def __init__(self, user_data) -> None:
+        self.user_name = user_data.get("user_name")
+        self.user_email = user_data.get("user_email")
+        self.user_password = user_data.get("user_password")
+
+    def activity(self):
+        verify_name = self.verify("name", self.user_name)
+        verify_email = self.verify("email", self.user_email)
+        verify_pass = self.verify("password", self.user_password)
+
+        try:
+            if verify_name:
+                if verify_email:
+                    with db.connect() as conn:
+                        existing_user = (
+                            conn.execute(
+                                text(
+                                    f"""SELECT * FROM users WHERE user_email = \"{self.user_email}\" LIMIT 1"""
+                                )
+                            )
+                            .mappings()
+                            .all()
+                        )
+                        # print(existing_user)
+                        if existing_user:
+                            raise UserDefinedExc(403, "User Already Exists!")
+                        if verify_pass:
+                            data_token = encode(
+                                {
+                                    "data": {
+                                        "user_name": self.user_name,
+                                        "user_email": self.user_email,
+                                        "user_password": generate_password_hash(
+                                            self.user_password
+                                        ),
+                                    },
+                                    "exp": datetime.utcnow() + timedelta(minutes=2),
+                                },
+                                getenv("JWT_KEY"),
+                            )
+                            self.send_mail(
+                                "UShare Registration Verification",
+                                recipients=[self.user_email],
+                                token=data_token,
+                                type="verify",
+                            )
+
+                            return jsonify(
+                                {
+                                    "success": True,
+                                    "message": "Check your mail inbox for verification.",
+                                }
+                            )
+                        else:
+                            raise UserDefinedExc(400, "Password Pattern Not Matched!")
+                else:
+                    raise UserDefinedExc(400, "Invalid Email Address")
+            else:
+                raise UserDefinedExc(400, "Name length must be greater than 4")
+
+        except UserDefinedExc as e:
+            if isinstance(e, UserDefinedExc):
+                return jsonify({"success": False, "message": e.args[0]}), e.code
+            elif isinstance(e, exc.SQLAlchemyError):
+                return jsonify({"success": False, "message": "Database Error"}), 503
+            else:
+                return jsonify({"success": False, "message": "Server Error"}), 500
 
 
 class Logout(JWT):

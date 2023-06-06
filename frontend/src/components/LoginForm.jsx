@@ -3,6 +3,8 @@ import { context } from "../context";
 import { Link } from "react-router-dom";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import { handleGoogleLogin } from "../api/auth";
+import jwtDecode from "jwt-decode";
 
 const LoginForm = ({
   setSwitchPos,
@@ -23,20 +25,36 @@ const LoginForm = ({
     setSwitchShow(true);
   }, []);
 
+  const makeLoginRequest = async (
+    user_email,
+    user_password = "",
+    google = false,
+    g_id = 0
+  ) => {
+    const data = await login(
+      {
+        user_id: user_email,
+        user_password: user_password,
+      },
+      google,
+      g_id
+    );
+    if (data.success) {
+      navigation("/");
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("username", data.username);
+    }
+    removePulse();
+    globalVal.triggerAlert(data.message);
+  };
+
   const loginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login");
-    triggerPulse();
     if (email.current.value) {
       if (password.current.value) {
-        const data = await login(email.current.value, password.current.value);
-        if (data.success) {
-          navigation("/");
-          localStorage.setItem("access_token", data.access_token);
-          localStorage.setItem("username", data.username);
-        }
-        removePulse();
-        globalVal.triggerAlert(data.message);
+        triggerPulse();
+        makeLoginRequest(email, pass);
       } else {
         password.current.classList.remove("form-field-empty-warn");
         password.current.classList.add("form-field-empty-warn");
@@ -45,6 +63,18 @@ const LoginForm = ({
       email.current.classList.remove("form-field-empty-warn");
       email.current.classList.add("form-field-empty-warn");
     }
+  };
+
+  const handleCredentialResponse = (response) => {
+    const { credential } = response;
+
+    console.log(jwtDecode(credential));
+    const user_info = jwtDecode(credential);
+
+    makeLoginRequest(user_info.email, "", true, user_info.sub);
+
+    // Use the credential object to access user data
+    // console.log(credential);
   };
 
   return (
@@ -98,6 +128,7 @@ const LoginForm = ({
         }}
         onClick={(e) => {
           e.preventDefault();
+          handleGoogleLogin(handleCredentialResponse);
         }}
       >
         <img src="/images/google-icon.png" alt="google icon" className="w-7" />

@@ -4,6 +4,7 @@ from flask import (
     jsonify,
     make_response as res,
     render_template,
+    url_for,
 )
 from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
 
@@ -13,8 +14,14 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 @auth.post("/login")
 def login():
     data = req.json
-    # print(data)
-    user_login = Login(data.get("user_id"), data.get("user_password"))
+    google = req.args.get("google")
+    g_id = req.args.get("g_id")
+    user_login = Login(
+        data.get("user_id"),
+        data.get("user_password"),
+        is_google=True if google else False,
+        g_id=g_id,
+    )
     return user_login.activity()
 
 
