@@ -229,30 +229,6 @@ class Login(Main, JWT, Auth):
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
 
-    # def check_user(self):
-    #     try:
-    #         with db.connect() as conn:
-    #             user_data = dict(
-    #                 conn.execute(
-    #                     text(
-    #                         f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
-    #                     )
-    #                 )
-    #                 .mappings()
-    #                 .first()
-    #             )
-
-    #             print(self.user_id)
-    #             user_data.update({"success": True})
-    #             return user_data
-
-    #     except (exc.SQLAlchemyError, Exception) as e:
-    #         print(e)
-    #         if isinstance(e, exc.SQLAlchemyError):
-    #             return {"success": False, "message": "Database Error"}
-    #         else:
-    #             return {"success": False, "message": "Server Error"}
-
     def generateResponse(self, user_id, user_name):
         try:
             access_token = JWT.generate_token(
