@@ -8,6 +8,8 @@ from flask import (
 )
 from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
 
+from utility.googleLoginConfig import oauth
+
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 
@@ -28,8 +30,31 @@ def login():
 @auth.post("/signup")
 def signup():
     data = req.json
-    user_signup = Signup(data)
+    args = req.args
+    user_signup = Signup(data, args)
     return user_signup.activity()
+
+
+@auth.get("/googleSignup")
+def googleSignup():
+    return oauth.Ushare.authorize_redirect(
+        redirect_uri=url_for("api.auth.callback", _external=True)
+    )
+
+
+@auth.get("/callback")
+def callback():
+    token = oauth.Ushare.authorize_access_token()
+    # print(token)
+    user_signup = Signup(
+        {
+            "user_name": token.get("userinfo").get("name"),
+            "user_email": token.get("userinfo").get("email"),
+            "g_id": token.get("userinfo").get("sub"),
+        }
+    )
+    return user_signup.google_signup()
+    # return "Done"
 
 
 @auth.post("/request_pass_change")

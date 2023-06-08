@@ -1,10 +1,12 @@
 from flask import Flask, request as req, render_template
-from Google import service
+
+# from Google import service
 from api import api
 from utility.mailConfig import mail
 from os import getenv
 from flask_cors import CORS
 from dotenv import load_dotenv
+from utility.googleLoginConfig import oauth
 
 load_dotenv()
 
@@ -26,12 +28,14 @@ app.config.update(
 #     MAIL_PORT=255,  # any port number excluding reserved ports
 # )
 mail.init_app(app)
+oauth.init_app(app)
 
 
 @app.route("/", methods=["GET"])
 def index():
-    print(service.albums().list().execute())
-    return "<h1>Home</h1>"
+    # print(service.albums().list().execute())
+    # return "<h1>Home</h1>"
+    return "<h1 style='text-align: center'>Home</h1>"
 
 
 @app.get("/check")

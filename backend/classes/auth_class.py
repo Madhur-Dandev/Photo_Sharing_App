@@ -1,5 +1,5 @@
 from sqlalchemy import text, exc
-from flask import request as req
+from flask import request as req, render_template
 from database import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from .UserDefinedExc import UserDefinedExc
@@ -144,10 +144,44 @@ class JWT:
         return encode({"data": payload, "exp": exp}, getenv("JWT_KEY"))
 
 
-class Login(Main, JWT):
+class Auth:
+    def __init__(self, user_id: str) -> None:
+        self.user_id = user_id
+
+    def check_user(self):
+        try:
+            with db.connect() as conn:
+                user_data = (
+                    conn.execute(
+                        text(
+                            f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
+                        )
+                    )
+                    .mappings()
+                    .first()
+                )
+                result = {"success": True}
+                if user_data:
+                    result.update(user_data)
+                return result
+
+        except (exc.SQLAlchemyError, Exception) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                return {
+                    "success": False,
+                    "message": "Database Error",
+                    "status_code": 503,
+                }
+            else:
+                return {"success": False, "message": "Server Error", "status_code": 500}
+
+
+class Login(Main, JWT, Auth):
     def __init__(
-        self, user_id, user_password: str = "", is_google: bool = False, g_id: int = 0
+        self, user_id, user_password: str, is_google: bool = False, g_id: int = 0
     ) -> None:
+        super().__init__(user_id)
         self.user_id = user_id
         self.user_password = user_password
         self.is_google = is_google
@@ -160,6 +194,7 @@ class Login(Main, JWT):
         try:
             if verify_email:
                 existing_user = self.check_user()
+                print(existing_user)
                 if existing_user.get("success"):
                     if existing_user.get("user_id"):
                         if self.user_password != "":
@@ -183,7 +218,9 @@ class Login(Main, JWT):
                     else:
                         raise UserDefinedExc(401, "User Not Found!")
                 else:
-                    raise UserDefinedExc(500, "Database Error!")
+                    raise UserDefinedExc(
+                        existing_user.get("status_code"), existing_user.get("message")
+                    )
             else:
                 raise UserDefinedExc(400, "Invalid Email Address")
         except UserDefinedExc as e:
@@ -192,29 +229,29 @@ class Login(Main, JWT):
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
 
-    def check_user(self):
-        try:
-            with db.connect() as conn:
-                user_data = dict(
-                    conn.execute(
-                        text(
-                            f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
-                        )
-                    )
-                    .mappings()
-                    .first()
-                )
+    # def check_user(self):
+    #     try:
+    #         with db.connect() as conn:
+    #             user_data = dict(
+    #                 conn.execute(
+    #                     text(
+    #                         f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
+    #                     )
+    #                 )
+    #                 .mappings()
+    #                 .first()
+    #             )
 
-                print(self.user_id)
-                user_data.update({"success": True})
-                return user_data
+    #             print(self.user_id)
+    #             user_data.update({"success": True})
+    #             return user_data
 
-        except (exc.SQLAlchemyError, Exception) as e:
-            print(e)
-            if isinstance(e, exc.SQLAlchemyError):
-                return {"success": False, "message": "Database Error"}
-            else:
-                return {"success": False, "message": "Server Error"}
+    #     except (exc.SQLAlchemyError, Exception) as e:
+    #         print(e)
+    #         if isinstance(e, exc.SQLAlchemyError):
+    #             return {"success": False, "message": "Database Error"}
+    #         else:
+    #             return {"success": False, "message": "Server Error"}
 
     def generateResponse(self, user_id, user_name):
         try:
@@ -252,11 +289,13 @@ class Login(Main, JWT):
             return jsonify({"success": True}), 500
 
 
-class Signup(Main, Mail):
-    def __init__(self, user_data) -> None:
+class Signup(Main, Mail, Auth):
+    def __init__(self, user_data: dict = {}) -> None:
+        super().__init__(user_data.get("user_email"))
         self.user_name = user_data.get("user_name")
         self.user_email = user_data.get("user_email")
         self.user_password = user_data.get("user_password")
+        self.g_id = user_data.get("g_id")
 
     def activity(self):
         verify_name = self.verify("name", self.user_name)
@@ -266,48 +305,47 @@ class Signup(Main, Mail):
         try:
             if verify_name:
                 if verify_email:
-                    with db.connect() as conn:
-                        existing_user = (
-                            conn.execute(
-                                text(
-                                    f"""SELECT * FROM users WHERE user_email = \"{self.user_email}\" LIMIT 1"""
-                                )
-                            )
-                            .mappings()
-                            .all()
-                        )
-                        # print(existing_user)
-                        if existing_user:
-                            raise UserDefinedExc(403, "User Already Exists!")
-                        if verify_pass:
-                            data_token = encode(
-                                {
-                                    "data": {
-                                        "user_name": self.user_name,
-                                        "user_email": self.user_email,
-                                        "user_password": generate_password_hash(
-                                            self.user_password
-                                        ),
+                    existing_user = self.check_user()
+                    if existing_user.get("success"):
+                        if not existing_user.get("user_id"):
+                            if verify_pass:
+                                data_token = encode(
+                                    {
+                                        "data": {
+                                            "user_name": self.user_name,
+                                            "user_email": self.user_email,
+                                            "user_password": generate_password_hash(
+                                                self.user_password
+                                            ),
+                                        },
+                                        "exp": datetime.utcnow() + timedelta(minutes=2),
                                     },
-                                    "exp": datetime.utcnow() + timedelta(minutes=2),
-                                },
-                                getenv("JWT_KEY"),
-                            )
-                            self.send_mail(
-                                "UShare Registration Verification",
-                                recipients=[self.user_email],
-                                token=data_token,
-                                type="verify",
-                            )
+                                    getenv("JWT_KEY"),
+                                )
+                                self.send_mail(
+                                    "UShare Registration Verification",
+                                    recipients=[self.user_email],
+                                    token=data_token,
+                                    type="verify",
+                                )
 
-                            return jsonify(
-                                {
-                                    "success": True,
-                                    "message": "Check your mail inbox for verification.",
-                                }
-                            )
+                                return jsonify(
+                                    {
+                                        "success": True,
+                                        "message": "Check your mail inbox for verification.",
+                                    }
+                                )
+                            else:
+                                raise UserDefinedExc(
+                                    400, "Password Pattern Not Matched!"
+                                )
                         else:
-                            raise UserDefinedExc(400, "Password Pattern Not Matched!")
+                            raise UserDefinedExc(403, "User Already Exists!")
+                    else:
+                        raise UserDefinedExc(
+                            existing_user.get("status_code"),
+                            existing_user.get("message"),
+                        )
                 else:
                     raise UserDefinedExc(400, "Invalid Email Address")
             else:
@@ -316,10 +354,44 @@ class Signup(Main, Mail):
         except UserDefinedExc as e:
             if isinstance(e, UserDefinedExc):
                 return jsonify({"success": False, "message": e.args[0]}), e.code
-            elif isinstance(e, exc.SQLAlchemyError):
-                return jsonify({"success": False, "message": "Database Error"}), 503
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
+
+    def google_signup(self):
+        try:
+            existing_user = self.check_user()
+            print(existing_user)
+            if not existing_user.get("success"):
+                raise UserDefinedExc(
+                    existing_user.get("status_code"), existing_user.get("message")
+                )
+            else:
+                if not existing_user.get("user_id"):
+                    with db.connect() as conn:
+                        conn.execute(
+                            text(
+                                f"""INSERT INTO users (user_name, user_email, user_password, g_id) VALUES (\"{self.user_name}\", \"{self.user_email}\", \"\", \"{self.g_id}\")"""
+                            )
+                        )
+                    raise UserDefinedExc(
+                        200, "Signup Complete! You can close the window and login now."
+                    )
+                else:
+                    print("hi")
+                    raise UserDefinedExc(
+                        400,
+                        "User Already Exists! Go back to signup and try with different account",
+                    )
+
+        except (Exception, exc.SQLAlchemyError) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                message = "Database Error"
+            elif isinstance(e, UserDefinedExc):
+                message = e.args[0]
+            else:
+                message = "Server Error"
+            return render_template("signup_message.html", message=message)
 
 
 class Logout(JWT):

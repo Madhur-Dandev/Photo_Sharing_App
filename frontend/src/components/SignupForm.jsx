@@ -120,6 +120,7 @@ const SignupForm = ({
         }}
         onClick={(e) => {
           e.preventDefault();
+          window.open("http://localhost:5000/api/auth/googleSignup", "_blank");
         }}
       >
         <img src="/images/google-icon.png" alt="google icon" className="w-7" />
