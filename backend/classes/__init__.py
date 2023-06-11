@@ -2,7 +2,14 @@ import re
 
 
 class Main:
+    """
+    This class have some commonly used method across inherited classes.
+    """
+
     def verify(self, type: str, data: str):
+        """
+        This method will take the type and a data and will check if the pattern of type is match or not. It will return true if matched and false if not matched.
+        """
         res = False
         if type == "password":
             res = (

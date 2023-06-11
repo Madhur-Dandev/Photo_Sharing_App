@@ -7,6 +7,10 @@ load_dotenv()
 
 
 class Mail:
+    """
+    This mail class is user to perform mail operation by using mail object.
+    """
+
     def send_mail(
         self,
         subject: str = "",
@@ -15,6 +19,9 @@ class Mail:
         token: str = "",
         type: str = "",
     ):
+        """
+        This method is use to send mail to requested users email address but based on their request type. Such as here are only body template available, first one is for user registration verification and another for reset password request.
+        """
         mail.send_message(
             subject=subject,
             sender=sender,
@@ -35,6 +42,10 @@ class Mail:
         )
 
     def reset_pass_body(self, token):
+        """
+        This method provide body for reset password email.
+        """
+
         return f"""
                 <h1 style="font-size: 24px; margin-bottom: 30px; text-align: center;">Password Reset</h1>
                 <p style="font-size: 16px; margin-bottom: 20px;">Dear User,</p>
@@ -45,6 +56,10 @@ class Mail:
                 <p style="font-size: 16px; margin-bottom: 20px;">UShare</p>"""
 
     def verify_body(self, token):
+        """
+        This method provide body for user verification email.
+        """
+
         return f"""
                 <h1 style="font-size: 24px; margin-bottom: 30px; text-align: center;">Verify your email address</h1>
                 <p style="font-size: 16px; margin-bottom: 20px;">Dear User,</p>

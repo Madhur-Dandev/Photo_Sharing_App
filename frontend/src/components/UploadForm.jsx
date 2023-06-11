@@ -3,11 +3,15 @@ import { context } from "../context";
 import { useNavigate } from "react-router-dom";
 
 const UploadForm = () => {
-  const navigation = useNavigate();
+  /**
+   * This form is use to upload image to the server. (Only register user can do this)
+   */
+
+  const navigation = useNavigate(); // object for integrating react router dom navigation.
 
   const globalVal = useContext(context);
-  const [image, setImage] = useState({});
-  const [showPreview, setShowPreview] = useState(false);
+  const [image, setImage] = useState({}); // The file of image uploaded by user will set here.
+  const [showPreview, setShowPreview] = useState(false); // new preview image will set here and if any existing previous image available will removed.
   const file = useRef();
   const dropContainer = useRef();
   const previewContainer = useRef();
@@ -15,6 +19,9 @@ const UploadForm = () => {
   console.log(image);
 
   const setUploadImage = (files) => {
+    /**
+     * This function will check it selected docuement is image or not and if it is then it will set preview image.
+     */
     if (files[0].type.includes("image")) {
       if (files.length > 1) {
         globalVal.triggerAlert("Cannot upload more than 1 file.");
@@ -29,6 +36,9 @@ const UploadForm = () => {
   };
 
   useEffect(() => {
+    /**
+     * It will read the image from file object then display it to user.
+     */
     if (showPreview) {
       const previewImg = document.createElement("img");
       previewImg.src = (window.URL ? URL : webkitURL).createObjectURL(image);
@@ -38,6 +48,9 @@ const UploadForm = () => {
   }, [showPreview]);
 
   useEffect(() => {
+    /**
+     * This is will if user is logged in or not before access this page.
+     */
     globalVal.setShowBall(false);
     if (!globalVal.loggedin) navigation("/auth/login");
   }, []);
@@ -52,16 +65,28 @@ const UploadForm = () => {
           <div
             className="w-full h-full flex flex-col justify-center items-center border-2 border-red-50 border-dashed relative transition-colors duration-300"
             onClick={(e) => {
+              /**
+               * The file dialog will open programmatically.
+               */
               if (!showPreview) file.current.click();
             }}
             onDragOver={(e) => {
+              /**
+               * If user drag their mouse over this div then border color will change.
+               */
               e.preventDefault();
               e.target.classList.add("border-red-400");
             }}
             onDragLeave={(e) => {
+              /**
+               * After leaving, border should be back to it's original color.
+               */
               e.target.classList.remove("border-red-400");
             }}
             onDrop={(e) => {
+              /**
+               * It will get the image object and save it to current state.
+               */
               e.preventDefault();
               if (!showPreview) setUploadImage(e.dataTransfer.files);
               else globalVal.triggerAlert("Please remove the image first");

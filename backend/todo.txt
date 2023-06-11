@@ -1,0 +1,2 @@
+1. To invalidate the reset password token.
+2. To invalidate the refresh_token from secure cookie.

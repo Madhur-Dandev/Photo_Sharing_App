@@ -3,6 +3,9 @@ import { context } from "../context";
 import ImgGrid from "./ImgGrid";
 
 const Profile = () => {
+  /**
+   * User can customize their profile.
+   */
   const globalVal = useContext(context);
 
   useEffect(() => {

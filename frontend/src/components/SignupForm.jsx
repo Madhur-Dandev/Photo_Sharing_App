@@ -16,9 +16,9 @@ const SignupForm = ({
   const name = useRef();
   const email = useRef();
   const password = useRef();
-  const [userName, setUserName] = useState();
-  const [userEmail, setUserEmail] = useState();
-  const [userPassword, setUserPassword] = useState();
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
   useEffect(() => {
     setSwitchPos(window.innerWidth >= 640 ? "left-40" : "left-28");
@@ -42,6 +42,7 @@ const SignupForm = ({
             removePulse();
           }
           globalVal.triggerAlert(data.message);
+          removePulse();
         } else {
           password.current.classList.remove("form-field-empty-warn");
           password.current.classList.add("form-field-empty-warn");

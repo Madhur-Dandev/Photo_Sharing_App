@@ -9,12 +9,15 @@ import os
 
 class Google:
     @staticmethod
-    def Create_Servie(
+    def Create_Service(
         client_secrets_file_loc: str,
         api_service_namme: str,
         api_version: str,
         scope: list,
     ):
+        """
+        This static method will create a service object for api request for google apis and return that object to where it was requested.
+        """
         os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"  # only for development phase
 
         token_file_name = os.path.join(
@@ -50,8 +53,11 @@ class Google:
 
     @staticmethod
     def get_poeple_data(id: str):
+        """
+        This will first ask to create the service object for api request from "Create_Service" class and then get the user data by behalf of their provided google id and return the data.
+        """
         try:
-            service = Google().Create_Servie(
+            service = Google().Create_Service(
                 os.path.join(
                     Path(__file__).parents[1],
                     "credentials",
@@ -69,7 +75,7 @@ class Google:
                 service.people()
                 .get(resourceName=f"people/{id}", personFields="names,emailAddresses")
                 .execute()
-            )
+            )  # This will get the information of google user but the only visible information will be shown that means for example, if the user hidden their email information then it api will not get that information about that specific user.
         except (HttpError, Exception) as e:
             if isinstance(e, HttpError):
                 return {"found": False, "message": "User Not Found"}

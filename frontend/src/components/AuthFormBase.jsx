@@ -6,6 +6,10 @@ import ForgetPassForm from "./ForgetPassForm";
 import { Link } from "react-router-dom";
 
 const Auth = () => {
+  /**
+   * This is base template for login and signup and password reset form.
+   * The image and style in this base remain same for all three forms.
+   */
   const { type } = useParams();
   const switchElem = useRef();
   const authSection = useRef();
@@ -13,10 +17,16 @@ const Auth = () => {
   const [switchPos, setSwitchPos] = useState("");
 
   const triggerPulse = () => {
+    /**
+     * This is use the predefined class of tailwind to apply pulse animation
+     */
     authSection.current.classList.add("animate-pulse");
   };
 
   const removePulse = () => {
+    /**
+     * This will remove pulse animation
+     */
     authSection.current.classList.remove("animate-pulse");
   };
 

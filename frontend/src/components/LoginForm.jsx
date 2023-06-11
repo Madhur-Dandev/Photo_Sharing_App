@@ -55,7 +55,7 @@ const LoginForm = ({
     if (email.current.value) {
       if (password.current.value) {
         triggerPulse();
-        makeLoginRequest(email, pass);
+        makeLoginRequest(userEmail, userPassword);
       } else {
         password.current.classList.remove("form-field-empty-warn");
         password.current.classList.add("form-field-empty-warn");

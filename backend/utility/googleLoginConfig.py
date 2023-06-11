@@ -2,9 +2,11 @@ from dotenv import load_dotenv
 from authlib.integrations.flask_client import OAuth
 from os import getenv
 
-load_dotenv()
+load_dotenv()  # load all local env variables.
 
-oauth = OAuth()
+oauth = OAuth()  # make a new object of OAuth class for google oauth authentication.
+
+# register the app by providing the client's information. NOTE - client id and client secret must be kept under secure means and scope should not exceed tha actual limit set.
 oauth.register(
     "Ushare",
     client_id=getenv("CLIENT_ID"),

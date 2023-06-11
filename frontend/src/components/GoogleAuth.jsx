@@ -1,10 +1,12 @@
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { login } from "../api/auth";
 import { context } from "../context";
 
 const AuthHandler = ({ text, type }) => {
   const globalVal = useContext(context);
+  const navigation = useNavigate();
 
   const handleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -32,7 +34,7 @@ const AuthHandler = ({ text, type }) => {
         );
         message = data.message;
         if (data.success) {
-          //   navigation("/");
+          navigation("/");
           localStorage.setItem("access_token", data.access_token);
           localStorage.setItem("username", data.username);
         }

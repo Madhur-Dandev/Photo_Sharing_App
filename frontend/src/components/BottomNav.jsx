@@ -3,10 +3,16 @@ import { useContext, useEffect, useRef } from "react";
 import { context } from "../context";
 
 const BottomNav = () => {
+  /**
+   * As width of device get to or less then 640px the navigation at bottom of the screen will shown up.
+   */
   const globalVal = useContext(context);
   const ball = useRef();
 
   useEffect(() => {
+    /**
+     * As the width get lowerd after the nav showed up it will adjust in size so does it's indication ball's position.
+     */
     if (globalVal.ballPos === 2) {
       ball.current.classList.remove("left-bottom-first");
       ball.current.classList.add("left-bottom-middle");
