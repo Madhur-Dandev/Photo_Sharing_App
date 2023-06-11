@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { handleGoogleLogin } from "../api/auth";
+import GoogleAuth from "./GoogleAuth";
 import jwtDecode from "jwt-decode";
 
 const LoginForm = ({
@@ -121,7 +122,7 @@ const LoginForm = ({
       <button className="auth-btn" onClick={loginSubmit}>
         Login
       </button>
-      <button
+      {/* <button
         className="auth-btn flex justify-between items-center"
         style={{
           backgroundColor: "WindowText",
@@ -134,7 +135,8 @@ const LoginForm = ({
         <img src="/images/google-icon.png" alt="google icon" className="w-7" />
         <span className="text-sm sm:text-base">Login With Google</span>
         <div></div>
-      </button>
+      </button> */}
+      <GoogleAuth />
       <Link
         to="/auth/forgetPass"
         className="auth-form-elem cursor-pointer text-end"

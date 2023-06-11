@@ -7,7 +7,10 @@ from flask import (
     url_for,
 )
 from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
-
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from json import loads
 from utility.googleLoginConfig import oauth
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
@@ -18,9 +21,10 @@ def login():
     data = req.json
     google = req.args.get("google")
     g_id = req.args.get("g_id")
+    print(data, google, g_id)
     user_login = Login(
         data.get("user_id"),
-        data.get("user_password"),
+        data.get("user_password", ""),
         is_google=True if google else False,
         g_id=g_id,
     )
@@ -33,6 +37,29 @@ def signup():
     args = req.args
     user_signup = Signup(data, args)
     return user_signup.activity()
+
+
+@auth.post("/google_signup")
+def google_signup():
+    access_token = req.json.get("access_token")
+    try:
+        req_obj = Request(
+            "https://www.googleapis.com/oauth2/v2/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        with urlopen(req_obj) as res:
+            data = loads(res.read())
+
+    except (HTTPError, URLError) as e:
+        print(e)
+    user_signup = Signup(
+        {
+            "user_name": data.get("name"),
+            "user_email": data.get("email"),
+            "g_id": data.get("id"),
+        }
+    )
+    return user_signup.google_signup_json()
 
 
 @auth.get("/googleSignup")

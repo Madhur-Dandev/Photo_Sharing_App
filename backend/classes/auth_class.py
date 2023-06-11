@@ -369,6 +369,50 @@ class Signup(Main, Mail, Auth):
                 message = "Server Error"
             return render_template("signup_message.html", message=message)
 
+    def google_signup_json(self):
+        try:
+            existing_user = self.check_user()
+            print(existing_user)
+            if not existing_user.get("success"):
+                raise UserDefinedExc(
+                    existing_user.get("status_code"), existing_user.get("message")
+                )
+            else:
+                if not existing_user.get("user_id"):
+                    with db.connect() as conn:
+                        conn.execute(
+                            text(
+                                f"""INSERT INTO users (user_name, user_email, user_password, g_id) VALUES (\"{self.user_name}\", \"{self.user_email}\", \"\", \"{self.g_id}\")"""
+                            )
+                        )
+                    # raise UserDefinedExc(
+                    #     200, "Signup Complete! You can close the window and login now."
+                    # )
+                    return (
+                        jsonify(
+                            {"success": True, "message": "You have been registered!"}
+                        ),
+                        201,
+                    )
+                else:
+                    raise UserDefinedExc(
+                        400,
+                        "User Already Exists! Go back to signup and try with different account",
+                    )
+
+        except (Exception, exc.SQLAlchemyError) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                message = "Database Error"
+                code = 503
+            elif isinstance(e, UserDefinedExc):
+                message = e.args[0]
+                code = e.code
+            else:
+                message = "Server Error"
+                code = 500
+            return jsonify({"success": True, "message": message}), code
+
 
 class Logout(JWT):
     def activity(self, token):

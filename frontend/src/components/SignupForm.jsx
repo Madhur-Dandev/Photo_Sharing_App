@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { context } from "../context";
 import { signup } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import GoogleAuth from "./GoogleAuth";
 
 const SignupForm = ({
   setSwitchPos,
@@ -113,7 +114,7 @@ const SignupForm = ({
       <button className="auth-btn" onClick={submitSignup}>
         Signup
       </button>
-      <button
+      {/* <button
         className="auth-btn flex justify-between items-center"
         style={{
           backgroundColor: "WindowText",
@@ -126,7 +127,8 @@ const SignupForm = ({
         <img src="/images/google-icon.png" alt="google icon" className="w-7" />
         <span className="text-sm sm:text-base">Signup With Google</span>
         <div></div>
-      </button>
+      </button> */}
+      <GoogleAuth text="Signup With Google" type="signup" />
     </form>
   );
 };
