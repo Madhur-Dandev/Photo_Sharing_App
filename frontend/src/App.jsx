@@ -16,7 +16,7 @@ function App() {
   const globalVal = useContext(context); // access global context values
 
   return (
-    <div className="bg-slate-600 text-slate-100 relative">
+    <div className="bg-zinc-800 text-slate-100 relative">
       {/* show alert only when something triggers it. */}
       {globalVal.showAlert && <Alert />}
       {/* Component to show the details of image when it shows to user */}

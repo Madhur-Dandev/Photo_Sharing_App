@@ -13,6 +13,7 @@ export default {
       boxShadow: {
         "nav-login": "0px 8px 10px -9px",
         "nav-login-hover": "0px 9px 15px -7px",
+        "profile-img": "0px 5px 40px 5px"
       },
       spacing: {
         "initial": "0.35rem",

@@ -2,6 +2,11 @@ import { useState } from "react";
 import Comments from "./Comments";
 
 const CommentAndReply = ({ type }) => {
+  /**
+   * This component is to add reply to the comment.
+   */
+
+  // These are some dummy comment which will remove in production.
   const COMMENTS = [
     {
       id: 1,
@@ -52,6 +57,9 @@ const CommentAndReply = ({ type }) => {
           />
           <button
             onClick={() => {
+              /**
+               * Adding up dummy comment/reply without server. (This will remove in production phase)
+               */
               setComments([
                 ...comments,
                 {
