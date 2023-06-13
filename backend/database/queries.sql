@@ -9,3 +9,11 @@ CREATE TABLE restricted_token (
     token_id INT PRIMARY KEY AUTO_INCREMENT,
     token VARCHAR(500) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS user_info (
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    user_name VARCHAR(20) NOT NULL,
+    user_profile VARCHAR(200) DEFAULT NULL,
+    user_bio VARCHAR(200) DEFAULT NULL,
+    user_id INT NOT NULL
+);

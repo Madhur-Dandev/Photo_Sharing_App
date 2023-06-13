@@ -36,7 +36,7 @@ class JWT:
                 if existing_user:
                     raise UserDefinedExc(403, "Session Expired")
                 else:
-                    id = conn.execute(
+                    conn.execute(
                         text(
                             f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
                         )

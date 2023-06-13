@@ -1,4 +1,5 @@
-from flask import Flask, request as req, render_template, jsonify
+from flask import Flask, request as req, render_template, jsonify, g, make_response
+from classes.auth_class import JWT
 
 # from Google import service
 from api import api
@@ -11,7 +12,7 @@ from utility.googleLoginConfig import oauth
 load_dotenv()  # to load all evn variable from local env
 
 app = Flask(__name__)  # create a app object
-CORS(app, supports_credentials=True)  # allowing cors request to this api
+CORS(app, supports_credentials=True)  # allowing cors request for this api
 app.config["SECRET_KEY"] = getenv("JWT_KEY")  # setting a secret key for the app
 app.config["SESSION_COOKIE_SECURE"] = True  # allow secure cookie
 app.register_blueprint(api)
@@ -36,13 +37,56 @@ mail.init_app(app)
 oauth.init_app(app)
 
 
-@app.route("/", methods=["GET"])
+def check_token():
+    if req.json.get("access_token") and req.cookies.get("refresh_token"):
+        jwt = JWT()
+        data = jwt.check_token(
+            req.json.get("access_token"), req.cookies.get("refresh_token")
+        )
+        if not data.get("success"):
+            return jsonify({"success": False, "message": "Invalid Token"}), 401
+        g.user_data = data
+    else:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+
+@app.before_request
+def before_request():
+    print(req.path)
+
+
+@app.before_request
+def cors_preflight():
+    """
+    Allow only origin "http://localhost:5500" and "http://localhost:5173" with credential.
+    """
+    if req.method == "OPTIONS":
+        origin = req.headers.get("origin")
+        response = make_response()
+        if origin == "http://localhost:5500" or "http://localhost:5173":
+            response.headers.add(
+                "Access-Control-Allow-Origin",
+                origin,
+            )
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type, Authorization"
+        )
+        response.headers.add(
+            "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"
+        )
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        print("")
+        return response
+
+
+@app.route("/abc", methods=["GET"])
 def index():
     """
     Temporary route for testing
     """
     # print(service.albums().list().execute())
     # return "<h1>Home</h1>"
+    # print(req.headers.get("referer"))
     return "<h1 style='text-align: center'>Home</h1>"
 
 
