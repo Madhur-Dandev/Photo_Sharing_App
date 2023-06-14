@@ -16,7 +16,7 @@ class JWT:
         try:
             with db.connect() as conn:
                 user_data = self.decode_token(token)
-                print(user_data)
+                print(user_data, "19")
                 if not user_data.get("success"):
                     raise UserDefinedExc(
                         user_data.get("status_code"), user_data.get("message")
@@ -52,14 +52,14 @@ class JWT:
                     #     jsonify({"success": True, "message": "You are verified"}),
                     #     200,
                     # )
+                    # username =
                     return render_template(
-                        "signup_username.html",
+                        "signup_profile_setting.html",
                         username=username_generator(
                             user_data.get("data").get("user_name")
                         ),
                         token=self.generate_token(
-                            {"id": id},
-                            int((datetime.utcnow() + timedelta(days=1)).timestamp()),
+                            {"id": id}, datetime.utcnow() + timedelta(days=1)
                         ),
                     )
         except (Exception,) as e:
@@ -143,6 +143,7 @@ class JWT:
                         f"""SELECT COUNT(token_id) FROM restricted_token WHERE token = '{token}'"""
                     )
                 ).first()
+                print(token_exists)
                 if not token_exists[0]:
                     token_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
                     print(token_data, "283")
@@ -175,6 +176,9 @@ class JWT:
             return result_dict
 
     @staticmethod
-    def generate_token(payload: dict = {}, exp: int = 0):
-        print(payload)
-        return encode({"data": payload, "exp": exp}, getenv("JWT_KEY"))
+    def generate_token(payload: dict, exp: datetime):
+        return encode(
+            {"data": payload, "exp": exp},
+            getenv("JWT_KEY"),
+            algorithm="HS256",
+        )

@@ -62,12 +62,10 @@ class Login(Main, JWT, Auth):
     def generateResponse(self, user_id, user_name):
         try:
             access_token = JWT.generate_token(
-                {"id": user_id},
-                int((datetime.utcnow() + timedelta(minutes=15)).timestamp()),
+                {"id": user_id}, datetime.utcnow() + timedelta(minutes=15)
             )
             refresh_token = JWT.generate_token(
-                {"id": user_id},
-                int((datetime.utcnow() + timedelta(days=5)).timestamp()),
+                {"id": user_id}, datetime.utcnow() + timedelta(days=5)
             )
             resp = res(
                 jsonify(

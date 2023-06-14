@@ -8,11 +8,12 @@ from sqlalchemy import exc, text
 from werkzeug.security import generate_password_hash
 from .JWT import JWT
 from datetime import datetime, timedelta
+from utility.helping_functions import username_generator
 
 
 class Signup(Main, Mail, Auth, JWT):
     def __init__(self, user_data: dict = {}) -> None:
-        super().__init__(user_data.get("user_email"))
+        super().__init__(user_data.get("user_email", ""))
         self.user_name = user_data.get("user_name")
         self.user_email = user_data.get("user_email")
         self.user_password = user_data.get("user_password")
@@ -38,12 +39,9 @@ class Signup(Main, Mail, Auth, JWT):
                                             self.user_password
                                         ),
                                     },
-                                    int(
-                                        (
-                                            datetime.utcnow() + timedelta(minutes=2)
-                                        ).timestamp()
-                                    ),
+                                    datetime.utcnow() + timedelta(minutes=2),
                                 )
+                                # print(data_token)
                                 mail_result = self.send_mail(
                                     "UShare Registration Verification",
                                     recipients=[self.user_email],
@@ -167,3 +165,63 @@ class Signup(Main, Mail, Auth, JWT):
                 message = "Server Error"
                 code = 500
             return jsonify({"success": True, "message": message}), code
+
+    def verify_user(self, token: str):
+        try:
+            with db.connect() as conn:
+                user_data = self.decode_token(token)
+                print(user_data, "19")
+                if not user_data.get("success"):
+                    raise UserDefinedExc(
+                        user_data.get("status_code"), user_data.get("message")
+                    )
+                existing_user = (
+                    conn.execute(
+                        text(
+                            f"""SELECT * FROM users WHERE user_email = \"{user_data.get("data").get("user_email")}\""""
+                        )
+                    )
+                    .mappings()
+                    .first()
+                )
+
+                if existing_user:
+                    raise UserDefinedExc(403, "Session Expired")
+                else:
+                    conn.execute(
+                        text(
+                            f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
+                        )
+                    )
+                    id = conn.execute(
+                        text(f"""SELECT LAST_INSERT_ID() from users""")
+                    ).first()[0]
+                    conn.execute(
+                        text(
+                            f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
+                        )
+                    )
+                    print(id)
+                    # return (
+                    #     jsonify({"success": True, "message": "You are verified"}),
+                    #     200,
+                    # )
+                    # username =
+                    return render_template(
+                        "signup_profile_setting.html",
+                        username=username_generator(
+                            user_data.get("data").get("user_name")
+                        ),
+                        token=self.generate_token(
+                            {"id": id}, datetime.utcnow() + timedelta(days=1)
+                        ),
+                    )
+        except (Exception,) as e:
+            print(e, "67")
+            if isinstance(e, UserDefinedExc):
+                message = e.args[0]
+                # return jsonify({"success": False, "message": e.args[0]}), e.code
+            else:
+                message = "Server Error"
+                # return jsonify({"success": False, "message": "Server Error"}), 500
+            return render_template("signup_message.html", message=message)

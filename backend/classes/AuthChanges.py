@@ -28,7 +28,7 @@ class AuthChanges(Mail, Main, JWT):
                     if existing_user:
                         data_token = self.generate_token(
                             {"id": existing_user.get("user_id")},
-                            int((datetime.utcnow() + timedelta(minutes=2)).timestamp()),
+                            datetime.utcnow() + timedelta(minutes=2),
                         )
 
                         mail_result = self.send_mail(

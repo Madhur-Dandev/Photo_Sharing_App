@@ -157,8 +157,8 @@ def verify_user():
     This route will verify user if he is not register via google because to ensure the users privacy and not any misuse of someone's email address. When a user submit required information and ask to register he will get a mail for verification in the submit email's mailbox. This route will then decode information user and proceed further. NOTE - the token will expire in 2 minutes and immediatly after use.
     """
     data = req.args
-    jwt = JWT()
-    return jwt.verify_user(data.get("token"))
+    signup = Signup()
+    return signup.verify_user(data.get("token"))
 
 
 @auth.get("/check_loggedin/<string:token>")

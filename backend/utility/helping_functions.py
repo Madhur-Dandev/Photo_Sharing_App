@@ -18,12 +18,19 @@ def username_generator(name: str):
                 name = name_split[1] + name_split[0]
             else:
                 name = name_split[0]
-            name += "".join([choice(digits) for _ in range(4)])
-            print(match(r"^[\w\.]{6,20}$", name))
-            print(any([True if item[0] == name else False for item in user_names]))
+            while True:
+                temp = name + "".join([choice(digits) for _ in range(4)])
+                if not any([True if item[0] == temp else False for item in user_names]):
+                    name = temp
+                    break
+
+            return name
+
+            # print(match(r"^[\w\.]{6,20}$", name))
+            # print(any([True if item[0] == name else False for item in user_names]))
 
     except (Exception, exc.SQLAlchemyError) as e:
         print(e)
 
 
-username_generator("mr.madhur")
+# username_generator("mr.madhur")
