@@ -1,0 +1,101 @@
+{% extends 'base.html' %} {% block title %}UShare - Signup{% endblock title %}
+{% block style %}
+<link
+  rel="stylesheet"
+  href="{{url_for('static', filename='css/signup_username.css')}}"
+/>
+{% endblock style %} {% block content %}
+<div class="container">
+  <div class="message">
+    <p class="msg-text">
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Id, repudiandae.
+    </p>
+    <span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+        class="msg-cross"
+        onclick="closeAlert(this)"
+      >
+        <path
+          fill="whitesmoke"
+          d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+        />
+      </svg>
+    </span>
+  </div>
+  <div class="username-form">
+    <h1 class="heading">Complete Your Signup</h1>
+    <small class="leaving-note"
+      >NOTE - If your leave the page without submitting then your username will
+      be decided by server</small
+    >
+    <input
+      type="text"
+      name="username"
+      id="username"
+      class="form-elem name-input"
+      maxlength="15"
+      value="{{username}}"
+      placeholder="Username"
+    />
+    <button class="btn form-elem" onclick="submitForm()">Confirm</button>
+  </div>
+</div>
+<script>
+  const username = document.querySelector("#username");
+  const msgContainer = document.querySelector(".message");
+  const msgText = document.querySelector(".msg-text");
+  const token = "{{token}}";
+  const defaultUserName = "{{username}}";
+
+  function closeAlert(e) {
+    e.parentElement.parentElement.style.display = "none";
+  }
+
+  async function fetchUsernameReq(username = defaultUserName) {
+    const res = await fetch(
+      `http://localhost:5000/api/profile/setusername?token=${token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      }
+    );
+    const data = await res.json();
+    if (data.success) {
+      msgContainer.style.backgroundColor = "#00bb3e";
+    } else {
+      msgContainer.style.backgroundColor = "#ff897b";
+    }
+    msgText.innerHTML = data.message;
+    msgContainer.style.display = "flex";
+  }
+
+  function submitForm() {
+    if (/^[\w\.]{6,15}$/g.test(username.value)) {
+      fetchUsernameReq(username.value);
+    } else {
+      msgContainer.style.backgroundColor = "#ff897b";
+      msgText.innerText =
+        "Username should only contain alphanumeric characters and length min 5 and max 15";
+      msgContainer.style.display = "flex";
+    }
+  }
+
+  document.documentElement.children[1].style.height = `${window.innerHeight}px`;
+  window.addEventListener("beforeunload", (event) => {
+    event.preventDefault();
+
+    if (/^[\w\.]{6,15}$/g.test(username.value)) {
+      fetchUsernameReq(username.value);
+    } else {
+      fetchUsernameReq();
+    }
+  });
+
+  console.log(/^[\w\.]{6,15}$/g.test("mr.madhur_dan22"));
+</script>
+{% endblock content%}

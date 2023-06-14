@@ -6,7 +6,13 @@ from flask import (
     render_template,
     url_for,
 )
-from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
+
+# from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
+from classes.JWT import JWT
+from classes.Login import Login
+from classes.Logout import Logout
+from classes.Signup import Signup
+from classes.AuthChanges import AuthChanges
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from json import loads
@@ -122,7 +128,7 @@ def request_pass_change():
     This route will check if the email of requested user is valid. If it is then it will send a verification mail.
     In case if the mail is not present in database then error will generate and message will return back to user.
     """
-    data = Auth_Changes()
+    data = AuthChanges()
     return data.send_pass_mail(req.json.get("user_email"))
 
 
@@ -139,7 +145,7 @@ def change_pass():
     """
     This route will take the token that was pass in the email that will use to identify the user and proceed for further process of reseting the password. In case if the token is not valid or expired then it will throw error and message will return back to user.
     """
-    data = Auth_Changes()
+    data = AuthChanges()
     return data.reset_pass(
         req.args.get("token"), req.json.get("new_password")
     )  # this method require token pass by user and a new password

@@ -79,7 +79,7 @@ def cors_preflight():
         return response
 
 
-@app.route("/abc", methods=["GET"])
+@app.route("/", methods=["GET"])
 def index():
     """
     Temporary route for testing

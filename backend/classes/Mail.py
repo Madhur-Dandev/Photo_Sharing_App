@@ -22,24 +22,29 @@ class Mail:
         """
         This method is use to send mail to requested users email address but based on their request type. Such as here are only body template available, first one is for user registration verification and another for reset password request.
         """
-        mail.send_message(
-            subject=subject,
-            sender=sender,
-            recipients=recipients,
-            html=f"""
-                <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Password Reset</title>
-                    </head>
-                    <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px; margin: 0;">
-                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 5px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);">
-                            {self.verify_body(token) if type == "verify" else self.reset_pass_body(token)}
-                        </div>
-                    </body>
-                </html>
-                """,
-        )
+        try:
+            mail.send_message(
+                subject=subject,
+                sender=sender,
+                recipients=recipients,
+                html=f"""
+                    <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Password Reset</title>
+                        </head>
+                        <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px; margin: 0;">
+                            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 5px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);">
+                                {self.verify_body(token) if type == "verify" else self.reset_pass_body(token)}
+                            </div>
+                        </body>
+                    </html>
+                    """,
+            )
+            return {"success": True}
+        except Exception as e:
+            print(e)
+            return {"success": False}
 
     def reset_pass_body(self, token):
         """

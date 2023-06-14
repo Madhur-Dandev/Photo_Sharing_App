@@ -27,11 +27,11 @@ const SignupForm = ({
 
   const submitSignup = async (e) => {
     e.preventDefault();
-    triggerPulse();
 
     if (name.current.value) {
       if (email.current.value) {
         if (password.current.value) {
+          triggerPulse();
           const data = await signup(
             name.current.value,
             email.current.value,

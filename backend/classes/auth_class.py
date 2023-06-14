@@ -10,7 +10,9 @@ from jwt import encode, decode, exceptions
 from datetime import timedelta, datetime
 from dotenv import load_dotenv
 from os import getenv
-import re
+
+# import re
+from utility.helping_functions import username_generator
 
 load_dotenv()
 
@@ -18,11 +20,13 @@ load_dotenv()
 class JWT:
     def verify_user(self, token: str):
         try:
-            user_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
-            user_data = self.decode_token(token)
-            if not user_data.get("success"):
-                raise UserDefinedExc(401, "Invalid Token")
             with db.connect() as conn:
+                user_data = self.decode_token(token)
+                print(user_data)
+                if not user_data.get("success"):
+                    raise UserDefinedExc(
+                        user_data.get("status_code"), user_data.get("message")
+                    )
                 existing_user = (
                     conn.execute(
                         text(
@@ -41,23 +45,45 @@ class JWT:
                             f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
                         )
                     )
-                    return (
-                        jsonify({"success": True, "message": "You are verified"}),
-                        200,
+                    id = conn.execute(
+                        text(f"""SELECT LAST_INSERT_ID() from users""")
+                    ).first()[0]
+                    conn.execute(
+                        text(
+                            f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
+                        )
+                    )
+                    print(id)
+                    # return (
+                    #     jsonify({"success": True, "message": "You are verified"}),
+                    #     200,
+                    # )
+                    return render_template(
+                        "signup_username.html",
+                        username=username_generator(
+                            user_data.get("data").get("user_name")
+                        ),
+                        token=self.generate_token(
+                            {"id": id},
+                            int((datetime.utcnow() + timedelta(days=1)).timestamp()),
+                        ),
                     )
         except (Exception,) as e:
-            print(e, "203")
+            print(e, "67")
             if isinstance(e, UserDefinedExc):
-                return jsonify({"success": False, "message": e.args[0]}), e.code
+                message = e.args[0]
+                # return jsonify({"success": False, "message": e.args[0]}), e.code
             else:
-                return jsonify({"success": False, "message": "Server Error"}), 500
+                message = "Server Error"
+                # return jsonify({"success": False, "message": "Server Error"}), 500
+            return render_template("signup_message.html", message=message)
 
     def check_token(self, token: str, refresh_token: str):
         try:
             token_data = self.decode_token(token)
             print(token_data, "212")
             if not token_data.get("success"):
-                if token_data.get("type") == 1:
+                if token_data.get("status_code") == 403:
                     result = self.generate_new_token(refresh_token)
                     print(result, "216")
                     if result.get("success"):
@@ -117,30 +143,46 @@ class JWT:
 
     def decode_token(self, token):
         try:
-            token_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
-            print(token_data, "283")
-            return {
-                "success": True,
-                "data": token_data.get("data"),
-            }
+            with db.connect() as conn:
+                token_exists = conn.execute(
+                    text(
+                        f"""SELECT COUNT(token_id) FROM restricted_token WHERE token = '{token}'"""
+                    )
+                ).first()
+                if not token_exists[0]:
+                    token_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
+                    print(token_data, "283")
+                    return {
+                        "success": True,
+                        "data": token_data.get("data"),
+                    }
+                raise UserDefinedExc(403, "Session Expired")
         except (
             exceptions.ExpiredSignatureError,
             exceptions.InvalidSignatureError,
             exceptions.InvalidTokenError,
             Exception,
+            exc.SQLAlchemyError,
         ) as e:
-            result_dict = {"success": False}
+            result_dict = {"success": False, "status_code": 500}
             print(e, "295")
-            if isinstance(e, exceptions.ExpiredSignatureError):
-                result_dict.update({"type": 1})
-            elif isinstance(e, exceptions.InvalidTokenError):
-                result_dict.update({"type": 2})
+            if (
+                isinstance(e, exceptions.ExpiredSignatureError)
+                or isinstance(e, exceptions.InvalidTokenError)
+                or isinstance(e, exceptions.InvalidSignatureError)
+            ):
+                result_dict.update({"message": e, "status_code": 403})
+            elif isinstance(e, exc.SQLAlchemyError):
+                result_dict.update({"message": "Database Error", "status_code": 503})
+            elif isinstance(e, UserDefinedExc):
+                result_dict.update({"message": e.args[0], "status_code": e.code})
             else:
-                result_dict.update({"type": 3})
+                result_dict.update({"message": "Server Error"})
             return result_dict
 
     @staticmethod
     def generate_token(payload: dict = {}, exp: int = 0):
+        print(payload)
         return encode({"data": payload, "exp": exp}, getenv("JWT_KEY"))
 
 
@@ -298,12 +340,18 @@ class Signup(Main, Mail, Auth):
                                     },
                                     getenv("JWT_KEY"),
                                 )
-                                self.send_mail(
+                                mail_result = self.send_mail(
                                     "UShare Registration Verification",
                                     recipients=[self.user_email],
                                     token=data_token,
                                     type="verify",
                                 )
+
+                                if not mail_result.get("success"):
+                                    raise UserDefinedExc(
+                                        500,
+                                        "Cannot proceed for request. Please try again later.",
+                                    )
 
                                 return jsonify(
                                     {
@@ -325,7 +373,10 @@ class Signup(Main, Mail, Auth):
                 else:
                     raise UserDefinedExc(400, "Invalid Email Address")
             else:
-                raise UserDefinedExc(400, "Name length must be greater than 4")
+                raise UserDefinedExc(
+                    400,
+                    "Name should only contain alphanumeric character and length of min 5 and max 25",
+                )
 
         except UserDefinedExc as e:
             if isinstance(e, UserDefinedExc):
@@ -462,12 +513,18 @@ class Auth_Changes(Mail, Main, JWT):
                             getenv("JWT_KEY"),
                         )
 
-                        self.send_mail(
+                        mail_result = self.send_mail(
                             "UShare Password Reset",
                             recipients=[email],
                             token=data_token,
                             type="password",
                         )
+
+                        if not mail_result.get("success"):
+                            raise UserDefinedExc(
+                                500,
+                                "Cannot proceed for request. Please try again later.",
+                            )
 
                         return (
                             jsonify(
@@ -495,8 +552,7 @@ class Auth_Changes(Mail, Main, JWT):
             if verify_pass:
                 token_data = self.decode_token(token)
                 if not token_data.get("success"):
-                    if token_data.get("type") == 1:
-                        raise UserDefinedExc(401, "Invalid Token or Session Expire")
+                    raise UserDefinedExc(401, token_data.get("message"))
 
                 with db.connect() as conn:
                     conn.execute(

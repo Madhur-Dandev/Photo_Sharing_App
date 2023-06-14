@@ -23,6 +23,6 @@ class Main:
         elif type == "email":
             res = True if re.match(r"^\w{3,}@\w{2,}\.\w{2,}", data) else False
         else:
-            res = True if len(data) > 4 else False
+            res = True if re.match(r"^[\w ]{5,25}$", data) else False
 
         return res
