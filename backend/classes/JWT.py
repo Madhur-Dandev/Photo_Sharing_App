@@ -1,8 +1,9 @@
 from jwt import encode, decode, exceptions
 from .UserDefinedExc import UserDefinedExc
 from sqlalchemy import text, exc
-from flask import render_template
-from utility.helping_functions import username_generator
+
+# from flask import render_template
+# from utility.helping_functions import username_generator
 from database import db
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -12,101 +13,98 @@ load_dotenv()
 
 
 class JWT:
-    def verify_user(self, token: str):
-        try:
-            with db.connect() as conn:
-                user_data = self.decode_token(token)
-                print(user_data, "19")
-                if not user_data.get("success"):
-                    raise UserDefinedExc(
-                        user_data.get("status_code"), user_data.get("message")
-                    )
-                existing_user = (
-                    conn.execute(
-                        text(
-                            f"""SELECT * FROM users WHERE user_email = \"{user_data.get("data").get("user_email")}\""""
-                        )
-                    )
-                    .mappings()
-                    .first()
-                )
+    # def verify_user(self, token: str):
+    #     try:
+    #         with db.connect() as conn:
+    #             user_data = self.decode_token(token)
+    #             print(user_data, "19")
+    #             if not user_data.get("success"):
+    #                 raise UserDefinedExc(
+    #                     user_data.get("status_code"), user_data.get("message")
+    #                 )
+    #             existing_user = (
+    #                 conn.execute(
+    #                     text(
+    #                         f"""SELECT * FROM users WHERE user_email = \"{user_data.get("data").get("user_email")}\""""
+    #                     )
+    #                 )
+    #                 .mappings()
+    #                 .first()
+    #             )
 
-                if existing_user:
-                    raise UserDefinedExc(403, "Session Expired")
-                else:
-                    conn.execute(
-                        text(
-                            f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
-                        )
-                    )
-                    id = conn.execute(
-                        text(f"""SELECT LAST_INSERT_ID() from users""")
-                    ).first()[0]
-                    conn.execute(
-                        text(
-                            f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
-                        )
-                    )
-                    print(id)
-                    # return (
-                    #     jsonify({"success": True, "message": "You are verified"}),
-                    #     200,
-                    # )
-                    # username =
-                    return render_template(
-                        "signup_profile_setting.html",
-                        username=username_generator(
-                            user_data.get("data").get("user_name")
-                        ),
-                        token=self.generate_token(
-                            {"id": id}, datetime.utcnow() + timedelta(days=1)
-                        ),
-                    )
-        except (Exception,) as e:
-            print(e, "67")
-            if isinstance(e, UserDefinedExc):
-                message = e.args[0]
-                # return jsonify({"success": False, "message": e.args[0]}), e.code
-            else:
-                message = "Server Error"
-                # return jsonify({"success": False, "message": "Server Error"}), 500
-            return render_template("signup_message.html", message=message)
+    #             if existing_user:
+    #                 raise UserDefinedExc(403, "Session Expired")
+    #             else:
+    #                 conn.execute(
+    #                     text(
+    #                         f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
+    #                     )
+    #                 )
+    #                 id = conn.execute(
+    #                     text(f"""SELECT LAST_INSERT_ID() from users""")
+    #                 ).first()[0]
+    #                 conn.execute(
+    #                     text(
+    #                         f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
+    #                     )
+    #                 )
+    #                 print(id)
+    #                 return render_template(
+    #                     "signup_profile_setting.html",
+    #                     username=username_generator(
+    #                         user_data.get("data").get("user_name")
+    #                     ),
+    #                     token=self.generate_token(
+    #                         {"id": id}, datetime.utcnow() + timedelta(days=1)
+    #                     ),
+    #                 )
+    #     except (Exception,) as e:
+    #         print(e, "67")
+    #         if isinstance(e, UserDefinedExc):
+    #             message = e.args[0]
+    #         else:
+    #             message = "Server Error"
+    #         return render_template("signup_message.html", message=message)
 
     def check_token(self, token: str, refresh_token: str):
         try:
             token_data = self.decode_token(token)
-            print(token_data, "212")
-            if not token_data.get("success"):
-                if token_data.get("status_code") == 403:
-                    result = self.generate_new_token(refresh_token)
-                    print(result, "216")
-                    if result.get("success"):
-                        result_dict = {"token": result.get("token")}
-                        result_dict.update(
-                            self.check_token(result.get("token"), refresh_token)
+            if token_data.get("success"):
+                with db.connect() as conn:
+                    existing_user = (
+                        conn.execute(
+                            text(
+                                f"""SELECT user_name FROM users WHERE user_id = {token_data.get("data").get("id")}"""
+                            )
                         )
-                        return result_dict
-
-                return {"success": False}
-
-            with db.connect() as conn:
-                existing_user = (
-                    conn.execute(
-                        text(
-                            f"""SELECT * FROM users WHERE user_id = {token_data.get("data").get("id")}"""
-                        )
+                        .mappings()
+                        .first()
                     )
-                    .mappings()
-                    .first()
+                    if existing_user:
+                        return {
+                            "user_id": token_data.get("data").get("id"),
+                            "user_name": existing_user.get("user_name"),
+                            "success": True,
+                        }
+                    else:
+                        return {"success": False}
+
+            if token_data.get("status_code") == 403:
+                new_token = self.generate_new_token(refresh_token)
+                if not new_token.get("success"):
+                    raise UserDefinedExc(
+                        new_token.get("status_code"), new_token.get("message")
+                    )
+
+                result_dict = {"token": new_token.get("token")}
+                result_dict.update(
+                    self.check_token(new_token.get("token"), refresh_token)
                 )
-                if existing_user:
-                    return {
-                        "user_id": token_data.get("data").get("id"),
-                        "user_name": existing_user.get("user_name"),
-                        "success": True,
-                    }
-                else:
-                    return {"success": False}
+                return result_dict
+
+            raise UserDefinedExc(
+                token_data.get("status_code"), token_data.get("message")
+            )
 
         except (
             exc.SQLAlchemyError,
@@ -119,21 +117,24 @@ class JWT:
     def generate_new_token(self, token: str):
         try:
             token_data = self.decode_token(token)
+            if not token_data.get("success"):
+                raise UserDefinedExc(
+                    token_data.get("status_code"), token_data.get("message")
+                )
             print(token_data, "257")
             if token_data.get("success"):
                 return {
                     "success": True,
-                    "token": encode(
-                        {
-                            "data": token_data.get("data"),
-                            "exp": datetime.utcnow() + timedelta(minutes=15),
-                        },
-                        getenv("JWT_KEY"),
+                    "token": self.generate_token(
+                        token_data.get("data"),
+                        datetime.utcnow() + timedelta(minutes=15),
                     ),
                 }
         except Exception as e:
+            if isinstance(e, UserDefinedExc):
+                return {"success": False, "message": e.args[0], "status_code": e.code}
             print(e, "277")
-            return {"success": False}
+            return {"success": False, "message": "Server Error", "status_code": 500}
 
     def decode_token(self, token):
         try:
@@ -166,7 +167,9 @@ class JWT:
                 or isinstance(e, exceptions.InvalidTokenError)
                 or isinstance(e, exceptions.InvalidSignatureError)
             ):
-                result_dict.update({"message": e, "status_code": 403})
+                result_dict.update(
+                    {"message": "Expired or Invalid Token", "status_code": 403}
+                )
             elif isinstance(e, exc.SQLAlchemyError):
                 result_dict.update({"message": "Database Error", "status_code": 503})
             elif isinstance(e, UserDefinedExc):

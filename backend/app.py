@@ -1,5 +1,5 @@
 from flask import Flask, request as req, render_template, jsonify, g, make_response
-from classes.auth_class import JWT
+from classes.JWT import JWT
 
 # from Google import service
 from api import api
@@ -50,15 +50,33 @@ def check_token():
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
 
+def check_user_profile_token():
+    if not req.args.get("token"):
+        return {"success": False, "message": "Unauthorized"}, 401
+
+    jwt = JWT()
+    data = jwt.decode_token(req.args.get("token"))
+    print(data)
+    if not data.get("success"):
+        return {"success": False, "message": data.get("message")}, data.get(
+            "status_code"
+        )
+    g.user_id = data.get("data").get("id")
+
+
 @app.before_request
 def before_request():
     print(req.path)
+    if req.path[:19] == "/api/profile/token/":
+        return check_token()
+    elif req.path[:16] == "/api/profile/set":
+        return check_user_profile_token()
 
 
 @app.before_request
 def cors_preflight():
     """
-    Allow only origin "http://localhost:5500" and "http://localhost:5173" with credential.
+    Allow only origin : "http://localhost:5500" and "http://localhost:5173" with credential.
     """
     if req.method == "OPTIONS":
         origin = req.headers.get("origin")

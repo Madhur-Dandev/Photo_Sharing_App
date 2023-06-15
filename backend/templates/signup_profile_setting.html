@@ -157,14 +157,17 @@
   }
 
   async function fetchUsernameReq(username = defaultUserName) {
+    const user_data = new FormData();
+    user_data.append("user_name", username);
+    if (selectedImage.size) {
+      user_data.append("user_picture", selectedImage);
+    }
+
     const res = await fetch(
-      `http://localhost:5000/api/profile/setusername?token=${token}`,
+      `http://localhost:5000/api/profile/set?token=${token}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
+        body: user_data,
       }
     );
     const data = await res.json();
@@ -172,7 +175,7 @@
   }
 
   function submitForm() {
-    if (/^[\w\.]{6,15}$/g.test(username.value)) {
+    if (/^[\w\.]{6,20}$/g.test(username.value)) {
       fetchUsernameReq(username.value);
     } else {
       alertMessage(

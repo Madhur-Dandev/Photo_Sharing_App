@@ -2,7 +2,8 @@ from database import db
 from sqlalchemy import exc, text
 from random import choice
 from string import digits
-from re import match
+
+# from re import match
 
 
 def username_generator(name: str):
@@ -33,4 +34,20 @@ def username_generator(name: str):
         print(e)
 
 
-# username_generator("mr.madhur")
+def get_file_size(file: object):
+    try:
+        if file:
+            # method to read size of incoming file over the internet
+            size_of_file = 0
+            data = file.stream.read(1024)
+
+            while data:
+                size_of_file += len(data)
+                file.stream.flush()
+                data = file.stream.read(1024)
+
+            return {"size": size_of_file}
+
+    except (Exception, IOError) as e:
+        print(e)
+        return {"size": 0}
