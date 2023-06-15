@@ -46,6 +46,7 @@ def get_file_size(file: object):
                 file.stream.flush()
                 data = file.stream.read(1024)
 
+            file.stream.seek(0)
             return {"size": size_of_file}
 
     except (Exception, IOError) as e:

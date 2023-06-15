@@ -1,6 +1,6 @@
 from .JWT import JWT
 from database import db
-from flask import jsonify, make_response as res
+from flask import jsonify, make_response as res, request as req
 from sqlalchemy import exc, text
 
 
@@ -12,7 +12,7 @@ class Logout(JWT):
                 with db.connect() as conn:
                     conn.execute(
                         text(
-                            f"""INSERT INTO restricted_token (token) VALUE (\"{token}\")"""
+                            f"""INSERT INTO restricted_token (token) VALUE (\"{token}\"), {f"('{req.cookies.get('refresh_token')}')" if req.cookies.get("refresh_cookie") else ""}"""
                         )
                     )
             resp = res(

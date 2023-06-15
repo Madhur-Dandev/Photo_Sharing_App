@@ -81,7 +81,6 @@ class Profile(JWT):
                         user_folder,
                         f"img.{self.user_picture.filename.rsplit('.', 1)[1]}",
                     )
-                    self.user_picture.stream.seek(0)
 
                     self.user_picture.save(user_picture_location)
 
