@@ -47,7 +47,7 @@ const Global = ({ children }) => {
       );
 
       const data = await resp.json();
-      console.log(data);
+      // console.log(data);
       if (resp.ok) {
         if (data.success) {
           setLoggedin(true);

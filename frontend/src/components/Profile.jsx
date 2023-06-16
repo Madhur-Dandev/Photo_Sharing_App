@@ -34,9 +34,6 @@ const Profile = () => {
       const data = await getProfileByUsername(username);
       if (data.success) {
         setUserInfo(data);
-        console.log(globalVal.username);
-        if (data.user_name === globalVal.username) setIsOwn(true);
-        else setIsOwn(false);
       }
     })();
     // if (username) {
@@ -60,6 +57,14 @@ const Profile = () => {
     //   })();
     // }
   };
+
+  useEffect(() => {
+    if (userInfo.user_name === globalVal.username) {
+      setIsOwn(true);
+    } else {
+      setIsOwn(false);
+    }
+  }, [globalVal.username, userInfo]);
 
   useMemo(() => {
     getUserInfo();
