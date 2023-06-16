@@ -12,7 +12,7 @@ class Auth:
                 user_data = (
                     conn.execute(
                         text(
-                            f"""SELECT * FROM users WHERE user_email = "{self.user_id}" LIMIT 1"""
+                            f"""SELECT users.*, user_info.user_name as u_name FROM users LEFT JOIN user_info ON users.user_id = user_info.user_id WHERE user_email = "{self.user_id}" LIMIT 1"""
                         )
                     )
                     .mappings()

@@ -22,44 +22,45 @@ class Login(Main, JWT, Auth):
         verify_pass = self.verify("password", self.user_password)
 
         try:
-            if verify_email:
-                existing_user = self.check_user()
-                print(existing_user)
-                if existing_user.get("success"):
-                    if existing_user.get("user_id"):
-                        if self.user_password != "":
-                            if (
-                                not check_password_hash(
-                                    existing_user.get("user_password"),
-                                    self.user_password,
-                                )
-                                or not verify_pass
-                            ):
-                                raise UserDefinedExc(401, "Password Incorrect!")
-                        else:
-                            if (
-                                not self.is_google
-                                or not existing_user.get("g_id") == self.g_id
-                            ):
-                                raise UserDefinedExc(401, "Unauthorized")
-                        return self.generateResponse(
-                            existing_user.get("user_id"), existing_user.get("user_name")
-                        )
-                    else:
-                        raise UserDefinedExc(401, "User Not Found!")
-                else:
-                    raise UserDefinedExc(
-                        existing_user.get("status_code"), existing_user.get("message")
-                    )
-            else:
+            if not verify_email:
                 raise UserDefinedExc(400, "Invalid Email Address")
-        except UserDefinedExc as e:
+
+            existing_user = self.check_user()
+            print(existing_user)
+            if not existing_user.get("success"):
+                raise UserDefinedExc(
+                    existing_user.get("status_code"), existing_user.get("message")
+                )
+
+            if not existing_user.get("user_id"):
+                raise UserDefinedExc(401, "User Not Found!")
+
+            if (self.user_password == "" and not self.is_google) or existing_user.get(
+                "g_id"
+            ) != self.g_id:
+                raise UserDefinedExc(401, "Unauthorized")
+            if self.user_password != "":
+                if (
+                    not check_password_hash(
+                        existing_user.get("user_password"), self.user_password
+                    )
+                    or not verify_pass
+                ):
+                    raise UserDefinedExc(401, "Password Incorrect!")
+
+            return self.generateResponse(
+                existing_user.get("user_id"),
+                existing_user.get("user_name"),
+                existing_user.get("u_name"),
+            )
+
+        except Exception as e:
             if isinstance(e, UserDefinedExc):
                 return jsonify({"success": False, "message": e.args[0]}), e.code
             else:
                 return jsonify({"success": False, "message": "Server Error"}), 500
 
-    def generateResponse(self, user_id, user_name):
+    def generateResponse(self, user_id, name, user_name):
         try:
             access_token = JWT.generate_token(
                 {"id": user_id}, datetime.utcnow() + timedelta(minutes=15)
@@ -72,6 +73,7 @@ class Login(Main, JWT, Auth):
                     {
                         "success": True,
                         "message": "Login Successfully",
+                        "name": name,
                         "username": user_name,
                         "access_token": access_token,
                     }

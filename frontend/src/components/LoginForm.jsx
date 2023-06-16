@@ -43,7 +43,8 @@ const LoginForm = ({
     if (data.success) {
       navigation("/");
       localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("username", data.username);
+      localStorage.setItem("name", data.name);
+      globalVal.setUsername(data.username);
     }
     removePulse();
     globalVal.triggerAlert(data.message);

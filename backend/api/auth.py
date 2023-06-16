@@ -31,7 +31,7 @@ def login():
     data = req.json
     google = req.args.get("google")
     g_id = req.args.get("g_id")
-    print(data, google, g_id)
+    # print(data, google, g_id)
 
     # making a object of Login class to perform login operation.
     user_login = Login(
@@ -182,5 +182,6 @@ def logout(token):
     """
     This simple route ensures that when hit the access_token provided by user will become invalid and the refresh token also.
     """
+    print(req.cookies)
     lgot = Logout()
     return lgot.activity(token)

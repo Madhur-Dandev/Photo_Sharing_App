@@ -74,15 +74,17 @@ class JWT:
                     existing_user = (
                         conn.execute(
                             text(
-                                f"""SELECT user_name FROM users WHERE user_id = {token_data.get("data").get("id")}"""
+                                f"""SELECT users.user_name as name, user_info.user_name FROM users JOIN user_info ON user_info.user_id = users.user_id WHERE users.user_id = {token_data.get("data").get("id")}"""
                             )
                         )
                         .mappings()
                         .first()
                     )
+                    print(existing_user)
                     if existing_user:
                         return {
                             "user_id": token_data.get("data").get("id"),
+                            "name": existing_user.get("name"),
                             "user_name": existing_user.get("user_name"),
                             "success": True,
                         }
@@ -110,7 +112,7 @@ class JWT:
             exc.SQLAlchemyError,
             Exception,
         ) as e:
-            # print(e, "246")
+            print(e, "246")
 
             return {"success": False}
 

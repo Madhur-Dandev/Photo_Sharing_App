@@ -78,6 +78,7 @@
   }
 
   function checkImage() {
+    console.log(selectedImage);
     if (!selectedImage.name) {
       pImgContainer.innerHTML = `<svg
         xmlns="http://www.w3.org/2000/svg"
@@ -172,6 +173,7 @@
     );
     const data = await res.json();
     alertMessage(data.message, data.success ? "success" : "danger");
+    window.location.url = "http://localhost:5173/auth/login";
   }
 
   function submitForm() {

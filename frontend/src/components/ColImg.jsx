@@ -30,7 +30,7 @@ const ColImg = ({ img, showUserInfo }) => {
         alt={img.user_name}
         className="w-full"
         loading="lazy"
-        onLoad={() => console.log("hi")}
+        // onLoad={() => console.log("hi")}
         ref={image}
       />
       {showUserInfo && (

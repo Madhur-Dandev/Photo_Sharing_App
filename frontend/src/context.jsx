@@ -52,10 +52,10 @@ const Global = ({ children }) => {
         if (data.success) {
           setLoggedin(true);
           setUsername(data.user_name);
-          if (data.token) {
-            localStorage.setItem("access_token", data.token);
-          }
         }
+      }
+      if (data.token) {
+        localStorage.setItem("access_token", data.token);
       }
     } else {
       setLoggedin(false);

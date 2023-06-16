@@ -29,15 +29,17 @@ class Profile(JWT):
             else:
                 query += f""" users JOIN user_info ON users.user_id = user_info.user_id WHERE users.user_id = {user_id}"""
 
+            # print(query)
             with db.connect() as conn:
-                user_data = dict(conn.execute(text(query)).mappings().first())
+                user_data = conn.execute(text(query)).mappings().first()
                 if user_data:
+                    user_data = dict(user_data)
                     user_data.update({"success": True})
 
                     if new_token and new_token != "":
                         user_data.update({"access_token": new_token})
 
-                    print(user_data)
+                    # print(user_data)
                     return user_data, 200
 
                 raise UserDefinedExc(404, "User Not Found")
@@ -62,7 +64,7 @@ class Profile(JWT):
             user_picture_location = ""
             if self.user_picture:
                 file_size = get_file_size(self.user_picture)
-                print(file_size)
+                # print(file_size)
 
                 if self.user_picture.mimetype.find("image") == -1:
                     raise UserDefinedExc(400, "File must be image")
@@ -99,8 +101,16 @@ class Profile(JWT):
                     )
                 )
 
-            return {"success": True}
+            return {
+                "success": True,
+                "message": "User Profile is set. Redirecting you to Ushare",
+            }
 
         except (Exception, exc.SQLAlchemyError) as e:
             print(e)
-            return {"success": False}
+            if isinstance(e, UserDefinedExc):
+                return {"success": False, "message": e.args[0]}, e.code
+            return {
+                "success": False,
+                "message": "Server Error. Please try again later",
+            }, 500

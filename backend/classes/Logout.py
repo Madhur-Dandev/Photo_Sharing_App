@@ -12,7 +12,7 @@ class Logout(JWT):
                 with db.connect() as conn:
                     conn.execute(
                         text(
-                            f"""INSERT INTO restricted_token (token) VALUE (\"{token}\"), {f"('{req.cookies.get('refresh_token')}')" if req.cookies.get("refresh_cookie") else ""}"""
+                            f"""INSERT INTO restricted_token (token) VALUE (\"{token}\"){f", ('{req.cookies.get('refresh_token')}')" if req.cookies.get("refresh_cookie") else ""}"""
                         )
                     )
             resp = res(
