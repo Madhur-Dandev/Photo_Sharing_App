@@ -63,6 +63,10 @@ const Global = ({ children }) => {
     }
   };
 
+  const setNewAccessToken = (token) => {
+    localStorage.setItem("access_token", token);
+  };
+
   return (
     <context.Provider
       value={{
@@ -86,6 +90,7 @@ const Global = ({ children }) => {
         username,
         setUsername,
         checkLogin,
+        setNewAccessToken,
       }}
     >
       {/* children will be the element that'd be wrapped up inside of this element */}

@@ -122,7 +122,7 @@ class Signup(Main, Mail, Auth, JWT):
                 message = "Server Error"
             return render_template("signup_message.html", message=message)
 
-    def google_signup_json(self):
+    def google_signup_json(self, profile_image_url: str):
         try:
             existing_user = self.check_user()
             print(existing_user)
@@ -138,9 +138,17 @@ class Signup(Main, Mail, Auth, JWT):
                                 f"""INSERT INTO users (user_name, user_email, user_password, g_id) VALUES (\"{self.user_name}\", \"{self.user_email}\", \"\", \"{self.g_id}\")"""
                             )
                         )
-                    # raise UserDefinedExc(
-                    #     200, "Signup Complete! You can close the window and login now."
-                    # )
+
+                        id = conn.execute(
+                            text(f"""SELECT LAST_INSERT_ID() FROM users""")
+                        ).first()[0]
+
+                        conn.execute(
+                            text(
+                                f"""INSERT INTO user_info (user_name, user_picture, user_id) VALUES ('{username_generator(self.user_name)}', '{profile_image_url}', {id})"""
+                            )
+                        )
+
                     return (
                         jsonify(
                             {"success": True, "message": "You have been registered!"}

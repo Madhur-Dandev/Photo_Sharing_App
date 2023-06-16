@@ -17,7 +17,7 @@ class JWT:
     #     try:
     #         with db.connect() as conn:
     #             user_data = self.decode_token(token)
-    #             print(user_data, "19")
+    #             #print(user_data, "19")
     #             if not user_data.get("success"):
     #                 raise UserDefinedExc(
     #                     user_data.get("status_code"), user_data.get("message")
@@ -48,7 +48,7 @@ class JWT:
     #                         f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
     #                     )
     #                 )
-    #                 print(id)
+    #                 #print(id)
     #                 return render_template(
     #                     "signup_profile_setting.html",
     #                     username=username_generator(
@@ -59,7 +59,7 @@ class JWT:
     #                     ),
     #                 )
     #     except (Exception,) as e:
-    #         print(e, "67")
+    #         #print(e, "67")
     #         if isinstance(e, UserDefinedExc):
     #             message = e.args[0]
     #         else:
@@ -110,7 +110,7 @@ class JWT:
             exc.SQLAlchemyError,
             Exception,
         ) as e:
-            print(e, "246")
+            # print(e, "246")
 
             return {"success": False}
 
@@ -121,7 +121,7 @@ class JWT:
                 raise UserDefinedExc(
                     token_data.get("status_code"), token_data.get("message")
                 )
-            print(token_data, "257")
+            # print(token_data, "257")
             if token_data.get("success"):
                 return {
                     "success": True,
@@ -133,7 +133,7 @@ class JWT:
         except Exception as e:
             if isinstance(e, UserDefinedExc):
                 return {"success": False, "message": e.args[0], "status_code": e.code}
-            print(e, "277")
+            # print(e, "277")
             return {"success": False, "message": "Server Error", "status_code": 500}
 
     def decode_token(self, token):
@@ -144,10 +144,10 @@ class JWT:
                         f"""SELECT COUNT(token_id) FROM restricted_token WHERE token = '{token}'"""
                     )
                 ).first()
-                print(token_exists)
+                # print(token_exists)
                 if not token_exists[0]:
                     token_data = decode(token, getenv("JWT_KEY"), algorithms=["HS256"])
-                    print(token_data, "283")
+                    # print(token_data, "283")
                     return {
                         "success": True,
                         "data": token_data.get("data"),
@@ -161,7 +161,7 @@ class JWT:
             exc.SQLAlchemyError,
         ) as e:
             result_dict = {"success": False, "status_code": 500}
-            print(e, "295")
+            # print(e, "295")
             if (
                 isinstance(e, exceptions.ExpiredSignatureError)
                 or isinstance(e, exceptions.InvalidTokenError)

@@ -23,25 +23,27 @@ class Profile(JWT):
     @staticmethod
     def get_profile(user_name: str = None, user_id: int = None, new_token=""):
         try:
-            query = "SELECT user_info.*, users.user_name FROM"
+            query = "SELECT user_info.*, users.user_name as name FROM"
             if user_name:
-                query += f""" user_info JOIN users ON user_info.user_id = users.user_id WHERE user_name = '{user_name}'"""
-
-            query += f""" users JOIN user_info ON users.user_id = user_info.user_id WHERE user_id = {user_id}"""
+                query += f""" user_info JOIN users ON user_info.user_id = users.user_id WHERE user_info.user_name = '{user_name}'"""
+            else:
+                query += f""" users JOIN user_info ON users.user_id = user_info.user_id WHERE users.user_id = {user_id}"""
 
             with db.connect() as conn:
-                user_data = conn.execute(text(query)).mappings().first()
+                user_data = dict(conn.execute(text(query)).mappings().first())
                 if user_data:
                     user_data.update({"success": True})
 
                     if new_token and new_token != "":
                         user_data.update({"access_token": new_token})
 
+                    print(user_data)
                     return user_data, 200
 
                 raise UserDefinedExc(404, "User Not Found")
 
         except (Exception, exc.SQLAlchemyError) as e:
+            print(e)
             if isinstance(e, UserDefinedExc):
                 return {"success": False, "message": e.args[0]}, e.code
             elif isinstance(e, exc.SQLAlchemyError):
@@ -102,9 +104,3 @@ class Profile(JWT):
         except (Exception, exc.SQLAlchemyError) as e:
             print(e)
             return {"success": False}
-
-
-# from pathlib import Path
-# from os import path
-
-# print(Path(__file__).parents[1])

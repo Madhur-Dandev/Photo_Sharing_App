@@ -1,26 +1,55 @@
 import { useEffect, useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { context } from "../context";
 import ImgGrid from "./ImgGrid";
+import { getProfileByUsername, getProfileByToken } from "../api/profile";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   /**
    * User can customize their profile.
    */
   const globalVal = useContext(context);
+  const navigator = useNavigate();
 
-  const { username } = (() => {
-    const params = useLocation().search.slice(1).split("&");
-    const paramsObj = {};
-    params.forEach((elem) => {
-      const data = elem.split("=");
-      paramsObj[data[0]] = data[1];
-    });
-    return paramsObj;
-  })();
+  const [userInfo, setUserInfo] = useState({});
+  const [isOwn, setIsOwn] = useState(false);
+
+  // const { username } = (() => {
+  //   const params = useLocation().search.slice(1).split("&");
+  //   const paramsObj = {};
+  //   params.forEach((elem) => {
+  //     const data = elem.split("=");
+  //     paramsObj[data[0]] = data[1];
+  //   });
+  //   return paramsObj;
+  // })();
+
+  const { username } = useParams();
 
   useEffect(() => {
     globalVal.setShowBall(false);
+
+    if (username) {
+      (async () => {
+        const data = await getProfileByUsername(username);
+        if (data.success) {
+          setUserInfo(data);
+        }
+      })();
+    } else {
+      const token = localStorage.getItem("access_token");
+      if (!token) navigator("/notFound");
+      setIsOwn(true);
+      (async () => {
+        const data = await getProfileByToken(token);
+        if (data.success) {
+          setUserInfo(data);
+        }
+
+        if (data.access_token) globalVal.setNewAccessToken(data.access_token);
+      })();
+    }
   }, []);
 
   return (
@@ -37,17 +66,15 @@ const Profile = () => {
           <div className="w-max">
             <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden shadow-profile-img shadow-slate-600">
               <img
-                src="/images/profile_temp.jpeg"
-                alt="user picture"
+                src={userInfo.user_picture}
+                alt={userInfo.name}
                 className="w-full h-full object-cover"
               />
             </div>
           </div>
           <div className="py-1 sm:py-4 w-full relative flex flex-col gap-6">
             <div className="flex flex-col md:flex-row gap-3 md:gap-10 items-center">
-              <p className="font-bold text-2xl sm:text-4xl">
-                Madhuri Kusumshastri
-              </p>
+              <p className="font-bold text-2xl sm:text-4xl">{userInfo.name}</p>
               <div className="flex gap-3">
                 <p className="text-base flex items-center font-extrabold bg-slate-200 text-stone-900 p-2 rounded-2xl cursor-pointer w-max mt-2 sm:mt-0 m-auto md:m-0">
                   Follow{" "}
@@ -143,11 +170,7 @@ const Profile = () => {
             </div>
             <div>
               <p className="user-bio sm:w-96 m-auto md:m-0">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit
-                deleniti, totam in mollitia tempore id quibusdam quis. Sapiente
-                aut quia ex vero nam, facilis praesentium autem fugiat modi
-                voluptas voluptatum nisi accusantium adipisci animi quisquam
-                velit facere enim hic libero!
+                {userInfo.user_bio ? userInfo.user_bio : ""}
               </p>
             </div>
             <div className="flex flex-col lg:flex-row justify-between lg:items-center">

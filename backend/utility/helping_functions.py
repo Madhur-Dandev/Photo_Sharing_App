@@ -6,6 +6,14 @@ from string import digits
 # from re import match
 
 
+def discard_num(val: str):
+    try:
+        int(val)
+        return False
+    except ValueError as e:
+        return True
+
+
 def username_generator(name: str):
     try:
         with db.connect() as conn:
@@ -13,6 +21,7 @@ def username_generator(name: str):
                 text(f"""SELECT user_name FROM user_info""")
             ).all()
             name_split = [word for item in name.split() for word in item.split("_")]
+            name_split = list(filter(discard_num, name_split))
             if len(name_split[0]) >= 16:
                 name = name_split[0][:16]
             elif len(name_split[0]) <= 8 and len(name_split[1]) <= 8:
@@ -52,3 +61,36 @@ def get_file_size(file: object):
     except (Exception, IOError) as e:
         print(e)
         return {"size": 0}
+
+
+# from string import digits
+# from random import choice
+
+
+# def discard_num(val: str):
+#     try:
+#         int(val)
+#         return False
+#     except ValueError as e:
+#         return True
+
+
+# def filter_num(name):
+#     name_split = [word for item in name.split() for word in item.split("_")]
+#     name_split = list(filter(discard_num, name_split))
+#     if len(name_split[0]) >= 16:
+#         name = name_split[0][:16]
+#     elif len(name_split[0]) <= 8 and len(name_split[1]) <= 8:
+#         name = name_split[1] + name_split[0]
+#     else:
+#         name = name_split[0]
+#     # while True:
+#     #     temp = name + "".join([choice(digits) for _ in range(4)])
+#     #     if not any([True if item[0] == temp else False for item in user_names]):
+#     #         name = temp
+#     #         break
+
+#     return name
+
+
+# print(filter_num("192 Madhur Dandev"))

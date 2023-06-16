@@ -70,7 +70,7 @@ def google_signup():
         )
         with urlopen(req_obj) as res:
             data = loads(res.read())
-
+            print(data)
     except (HTTPError, URLError) as e:
         return (
             jsonify(
@@ -88,7 +88,7 @@ def google_signup():
             "g_id": data.get("id"),
         }
     )
-    return user_signup.google_signup_json()
+    return user_signup.google_signup_json(data.get("picture"))
 
 
 @auth.get("/googleSignup")
@@ -167,10 +167,10 @@ def check_loggedin(token):
     This route ensures that the user is still logged in. In other word, the access token pass to user will check if it's valid or not. In case after the expiry of token and refresh token can be use to generate a new token and send it back to user who requested. NOTE - if user do not provide any refresh token then it is not possible to generate a new access token.
     """
     refresh_token = req.cookies.get("refresh_token")
-    print(refresh_token)
+    # print(refresh_token)
     jwt = JWT()
     result = jwt.check_token(token, refresh_token)
-    print(result, "47")
+    # print(result)
     return (
         jsonify({k: v for k, v in result.items() if k != "user_id"}),
         200 if result.get("success") else 401,

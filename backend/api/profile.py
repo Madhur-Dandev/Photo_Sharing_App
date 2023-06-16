@@ -10,9 +10,11 @@ def get_profile_by_username(username: str = ""):
     return Profile.get_profile(user_name=username)
 
 
-@profile.get("/token/<token>")
-def get_profile_by_token(token):
-    return Profile.get_profile(user_id=g.user_id, new_token=g.token)
+@profile.get("/token")
+def get_profile_by_token():
+    return Profile.get_profile(
+        user_id=g.user_data.get("user_id"), new_token=g.user_data.get("g.token")
+    )
 
 
 @profile.post("/set")
