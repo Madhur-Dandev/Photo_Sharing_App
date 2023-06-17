@@ -16,8 +16,9 @@ const Global = ({ children }) => {
   const [alertMsg, setAlertMsg] = useState("");
   const [loggedin, setLoggedin] = useState(false);
   const [username, setUsername] = useState("");
+  const [imageUrlAndPos, setImageUrlAndPos] = useState({});
 
-  const checkLogginFlag = 0;
+  // const checkLogginFlag = 0;
 
   const triggerAlert = (msg) => {
     /**
@@ -91,6 +92,8 @@ const Global = ({ children }) => {
         setUsername,
         checkLogin,
         setNewAccessToken,
+        imageUrlAndPos,
+        setImageUrlAndPos,
       }}
     >
       {/* children will be the element that'd be wrapped up inside of this element */}

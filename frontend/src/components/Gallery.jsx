@@ -66,8 +66,8 @@ const Gallery = () => {
       </div>
       <div className="p-5">
         <h1 className="text-4xl font-bold uppercase flex justify-center items-center my-5">
-          <span className="text-stone-800 text-5xl">R</span>ecommende
-          <span className="text-slate-800 text-5xl">d</span>
+          <span className="text-gray-400 text-5xl">R</span>ecommende
+          <span className="text-fuchsia-200 text-5xl">d</span>
         </h1>
         {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {colItem.map((col, index) => (

@@ -4,6 +4,7 @@ import { context } from "../context";
 import ImgGrid from "./ImgGrid";
 import { getProfileByUsername, getProfileByToken } from "../api/profile";
 import { useNavigate } from "react-router-dom";
+import ShowProfilePic from "./ShowProfilePic";
 
 const Profile = () => {
   /**
@@ -68,6 +69,7 @@ const Profile = () => {
 
   useMemo(() => {
     getUserInfo();
+    console.log("hi");
   }, [username]);
 
   useEffect(() => {
@@ -76,6 +78,7 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col">
+      <ShowProfilePic />
       <div>
         <div className="w-full h-52 xl:h-96">
           <img
@@ -91,6 +94,14 @@ const Profile = () => {
                 src={userInfo.user_picture}
                 alt={userInfo.name}
                 className="w-full h-full object-cover"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // console.log(e.target.getBoundingClientRect());
+                  globalVal.setImageUrlAndPos({
+                    url: userInfo.user_picture,
+                    pos: e.target.getBoundingClientRect(),
+                  });
+                }}
               />
             </div>
           </div>

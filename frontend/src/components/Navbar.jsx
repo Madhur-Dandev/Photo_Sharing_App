@@ -58,11 +58,11 @@ const Navbar = () => {
   // };
 
   return (
-    <nav className="bg-slate-800 py-3 px-4 flex justify-between items-center sticky top-0 z-40">
+    <nav className="bg-slate-800 py-3 px-4 flex justify-between items-center sticky top-0 z-50">
       <div className="flex items-center gap-4">
         <img src="/logo.png" alt="logo" className="w-10 rounded-full" />
         <p className="font-extrabold text-xl text-slate-200 font-logoFont">
-          UShare
+          PhotoBik
         </p>
       </div>
       <div className="relative sm:block hidden">
