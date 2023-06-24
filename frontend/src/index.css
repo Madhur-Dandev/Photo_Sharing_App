@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.scrollbar-hidden {
+    scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    width: 0;
+}
+
 .nav-list-item {
     @apply text-stone-800 text-lg font-semibold transition-colors duration-200 hover:text-stone-400
 }

@@ -12,4 +12,13 @@ const getProfileByToken = async (token) => {
     return await resp.json();
 }
 
-export {getProfileByUsername, getProfileByToken};
+const removeProfilePicture = async (token) => {
+    const resp = await fetch(`http://localhost:5000/api/profile/removePicture?token=${token}`, {
+        method: "PATCH",
+        credentials: "include"
+    });
+
+    return await resp.json();
+}
+
+export {getProfileByUsername, getProfileByToken, removeProfilePicture};

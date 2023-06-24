@@ -16,7 +16,7 @@ const ColImg = ({ img, showUserInfo }) => {
     // section to display each image in gallery or search.
     <div
       className="relative group cursor-pointer"
-      onClick={() => {
+      onClick={(e) => {
         /**
          * When any user clicks on image information will get stored in global values.
          * And also the image detail component showed up.

@@ -6,52 +6,52 @@ const ShowProfilePic = () => {
   const component = useRef();
   const image = useRef();
 
-  let keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
+  // let keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
 
-  function preventDefault(e) {
-    e.preventDefault();
-  }
+  // function preventDefault(e) {
+  //   e.preventDefault();
+  // }
 
-  function preventDefaultForScrollKeys(e) {
-    if (keys[e.keyCode]) {
-      preventDefault(e);
-      return false;
-    }
-  }
+  // function preventDefaultForScrollKeys(e) {
+  //   if (keys[e.keyCode]) {
+  //     preventDefault(e);
+  //     return false;
+  //   }
+  // }
 
-  // modern Chrome requires { passive: false } when adding event
-  let supportsPassive = false;
-  try {
-    window.addEventListener(
-      "test",
-      null,
-      Object.defineProperty({}, "passive", {
-        get: function () {
-          supportsPassive = true;
-        },
-      })
-    );
-  } catch (e) {}
+  // // modern Chrome requires { passive: false } when adding event
+  // let supportsPassive = false;
+  // try {
+  //   window.addEventListener(
+  //     "test",
+  //     null,
+  //     Object.defineProperty({}, "passive", {
+  //       get: function () {
+  //         supportsPassive = true;
+  //       },
+  //     })
+  //   );
+  // } catch (e) {}
 
-  let wheelOpt = supportsPassive ? { passive: false } : false;
-  let wheelEvent =
-    "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
+  // let wheelOpt = supportsPassive ? { passive: false } : false;
+  // let wheelEvent =
+  //   "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
 
-  // call this to Disable
-  function disableScroll() {
-    window.addEventListener("DOMMouseScroll", preventDefault, false); // older FF
-    window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
-    window.addEventListener("touchmove", preventDefault, wheelOpt); // mobile
-    window.addEventListener("keydown", preventDefaultForScrollKeys, false);
-  }
+  // // call this to Disable
+  // function disableScroll() {
+  //   window.addEventListener("DOMMouseScroll", preventDefault, false); // older FF
+  //   window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+  //   window.addEventListener("touchmove", preventDefault, wheelOpt); // mobile
+  //   window.addEventListener("keydown", preventDefaultForScrollKeys, false);
+  // }
 
-  // call this to Enable
-  function enableScroll() {
-    window.removeEventListener("DOMMouseScroll", preventDefault, false);
-    window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
-    window.removeEventListener("touchmove", preventDefault, wheelOpt);
-    window.removeEventListener("keydown", preventDefaultForScrollKeys, false);
-  }
+  // // call this to Enable
+  // function enableScroll() {
+  //   window.removeEventListener("DOMMouseScroll", preventDefault, false);
+  //   window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
+  //   window.removeEventListener("touchmove", preventDefault, wheelOpt);
+  //   window.removeEventListener("keydown", preventDefaultForScrollKeys, false);
+  // }
 
   const show = () => {
     if (component.current) {
@@ -80,7 +80,7 @@ const ShowProfilePic = () => {
     }, 0);
 
     if (globalVal.imageUrlAndPos.url) {
-      disableScroll();
+      globalVal.disableScroll();
       component.current.classList.remove("hidden");
       //   component.current.parentNode.parentNode.parentNode.classList.add("fixed");
       setTimeout(() => {
@@ -91,7 +91,7 @@ const ShowProfilePic = () => {
   };
 
   const hide = () => {
-    enableScroll();
+    globalVal.enableScroll();
     component.current.classList.remove("backdrop-blur-lg");
     component.current.classList.remove("bg-slate-900");
     image.current.style.height = `${globalVal.imageUrlAndPos.pos.height}px`;
@@ -126,7 +126,7 @@ const ShowProfilePic = () => {
       }}
     >
       <img
-        src="https://lh3.googleusercontent.com/a/AAcHTtctg_ygt-P_Bz2FQAjPkYeps_EgmRE1vmrSp2OL=s96-c"
+        src={globalVal.imageUrlAndPos.url}
         className="w-28 h-28 transition-all duration-300 relative top-0"
         ref={image}
       />

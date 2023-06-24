@@ -1,4 +1,4 @@
-import { useContext, useState, useRef, useEffect } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { context } from "../context";
 import CommentAndReply from "./CommentAndReply";
 
@@ -21,9 +21,12 @@ const ImgDetails = () => {
   return (
     globalVal.showImgDetails && (
       <div
-        className="fixed top-0 left-0 w-full h-screen z-50 backdrop-blur-lg p-3 bg-gray-900 bg-opacity-60 overflow-scroll opacity-0 transition-all duration-300"
+        className="fixed top-0 left-0 w-full h-screen backdrop-blur-lg p-3 bg-gray-900 bg-opacity-60 overflow-y-scroll opacity-0 transition-all duration-300"
         id="imgDetailContainer"
         ref={imgDetailContainer}
+        style={{
+          zIndex: 100,
+        }}
         onTransitionEnd={(e) => {
           if (
             globalVal.showImgDetails &&
@@ -40,9 +43,9 @@ const ImgDetails = () => {
           strokeWidth={1.5}
           stroke="currentColor"
           className="w-6 h-6 my-4 mx-2 cursor-pointer"
-          onClick={() =>
-            imgDetailContainer.current.classList.remove("opacity-100")
-          }
+          onClick={() => {
+            imgDetailContainer.current.classList.remove("opacity-100");
+          }}
         >
           <path
             strokeLinecap="round"
@@ -51,7 +54,7 @@ const ImgDetails = () => {
           />
         </svg>
 
-        <div className="flex justify-between items-center overflow-y-scroll">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img
               src={info.user_avatar}

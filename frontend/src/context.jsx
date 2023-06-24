@@ -18,8 +18,6 @@ const Global = ({ children }) => {
   const [username, setUsername] = useState("");
   const [imageUrlAndPos, setImageUrlAndPos] = useState({});
 
-  // const checkLogginFlag = 0;
-
   const triggerAlert = (msg) => {
     /**
      * This function is use to trigger the alert from anywhere in the application.
@@ -68,6 +66,59 @@ const Global = ({ children }) => {
     localStorage.setItem("access_token", token);
   };
 
+  /* ----------------- Enable/Disable Scroll -------------------- */
+  let keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
+
+  function preventDefault(e) {
+    e.preventDefault();
+  }
+
+  function preventDefaultForScrollKeys(e) {
+    if (keys[e.keyCode]) {
+      preventDefault(e);
+      return false;
+    }
+  }
+
+  // modern Chrome requires { passive: false } when adding event
+  let supportsPassive = false;
+  try {
+    window.addEventListener(
+      "test",
+      null,
+      Object.defineProperty({}, "passive", {
+        get: function () {
+          supportsPassive = true;
+        },
+      })
+    );
+  } catch (e) {}
+
+  let wheelOpt = supportsPassive ? { passive: false } : false;
+  let wheelEvent =
+    "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
+
+  // call this to Disable
+  function disableScroll(object = window) {
+    // console.log(object);
+    document.querySelector("html").classList.add("scrollbar-hidden");
+    object.addEventListener("DOMMouseScroll", preventDefault, false); // older FF
+    object.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+    object.addEventListener("touchmove", preventDefault, wheelOpt); // mobile
+    object.addEventListener("keydown", preventDefaultForScrollKeys, false);
+  }
+
+  // call this to Enable
+  function enableScroll(object = window) {
+    document.querySelector("html").classList.remove("scrollbar-hidden");
+    object.removeEventListener("DOMMouseScroll", preventDefault, false);
+    object.removeEventListener(wheelEvent, preventDefault, wheelOpt);
+    object.removeEventListener("touchmove", preventDefault, wheelOpt);
+    object.removeEventListener("keydown", preventDefaultForScrollKeys, false);
+  }
+
+  /* ----------------- Enable/Disable Scroll -------------------- */
+
   return (
     <context.Provider
       value={{
@@ -94,6 +145,8 @@ const Global = ({ children }) => {
         setNewAccessToken,
         imageUrlAndPos,
         setImageUrlAndPos,
+        enableScroll,
+        disableScroll,
       }}
     >
       {/* children will be the element that'd be wrapped up inside of this element */}

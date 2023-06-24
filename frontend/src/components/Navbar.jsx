@@ -155,7 +155,7 @@ const Navbar = () => {
               {localStorage.getItem("name")}
             </p>
           </div>
-          <div className="group-hover:flex absolute hidden flex-col bg-emerald-900 top-full left-0 p-2 w-full before:hidden before:border-8 before:-top-4 before:border-emerald-900   before:border-r-transparent before:border-t-transparent before:border-l-transparent">
+          <div className="group-hover:flex absolute hidden flex-col bg-emerald-900 top-full left-0 p-2 w-full before:hidden before:border-8 before:-top-4 before:border-emerald-900 before:border-r-transparent before:border-t-transparent before:border-l-transparent">
             <Link
               to={`/profile/${globalVal.username}`}
               className="logged-user-opt"

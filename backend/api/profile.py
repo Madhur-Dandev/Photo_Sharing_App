@@ -33,6 +33,11 @@ def update_profile_picture():
     return {"success": True}
 
 
+@profile.patch("/removePicture")
+def remove_picture():
+    pass
+
+
 @profile.post("/delete")
 def delete_profile():
     return {"success": False}
