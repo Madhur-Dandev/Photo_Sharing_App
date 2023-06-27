@@ -4,6 +4,7 @@ from sqlalchemy import text, exc
 from .UserDefinedExc import UserDefinedExc
 from utility.helping_functions import get_file_size, edit_profile_picture
 from os import path, getenv, mkdir, remove
+from shutil import rmtree
 from dotenv import load_dotenv
 from pathlib import Path
 from string import ascii_letters, digits
@@ -160,6 +161,12 @@ class Profile(JWT):
                             remove(user_picture_location)
                             raise UserDefinedExc(500, "Server Error! Try again later.")
 
+                conn.execute(
+                    text(
+                        f"""UPDATE user_info SET user_picture = \"{user_picture_location}\""""
+                    )
+                )
+
                 return_dict = {
                     "success": True,
                     "message": "Image changed successfully!",
@@ -169,6 +176,37 @@ class Profile(JWT):
                     return_dict.update({"token": user_data.get("token")})
 
                 return return_dict
+
+        except (Exception, exc.SQLAlchemyError) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                return {"success": False, "message": "Database Error"}, 500
+            elif isinstance(e, UserDefinedExc):
+                return {"success": False, "message": e.args[0]}, e.code
+            else:
+                return {"success": False, "message": "Server Error"}
+
+    @staticmethod
+    def removePicture(user_data):
+        try:
+            with db.connect() as conn:
+                user_picture = conn.execute(
+                    text(
+                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("id")}"""
+                    )
+                ).first()
+
+                if not user_picture:
+                    raise UserDefinedExc(403, "User has no picture to remove!")
+
+                if path.exists(user_picture[0]):
+                    rmtree(user_picture[0].rsplit("/", 2)[1])
+
+                    conn.execute(text(f"""UPDATE user_info SET user_picture = ''"""))
+
+                    return {"success": True, "message": "Picture Removed!"}, 200
+
+                raise UserDefinedExc(403, "User has no picture to remove!")
 
         except (Exception, exc.SQLAlchemyError) as e:
             print(e)

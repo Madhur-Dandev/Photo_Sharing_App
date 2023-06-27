@@ -65,12 +65,13 @@ def check_user_profile_token():
 @app.before_request
 def before_request():
     # print(req.path[:18])
-    if req.path[:18] == "/api/profile/token":
+    if (
+        req.path[:18] == "/api/profile/token"
+        or req.path[:26] == "/api/profile/updatePicture"
+    ):
         return check_token()
     elif req.path[:16] == "/api/profile/set":
         return check_user_profile_token()
-    elif req.path[:26] == "/api/profile/updatePicture":
-        return check_token()
 
 
 @app.before_request

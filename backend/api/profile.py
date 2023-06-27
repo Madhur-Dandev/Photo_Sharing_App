@@ -32,13 +32,12 @@ def update_profile():
 def update_profile_picture():
     data = dict(req.form)
     data.update({"image": req.files.get("image")})
-    # return Profile.setNewPicture(data, g.user_data)
     return Profile.setNewPicture(data, g.user_data)
 
 
 @profile.patch("/removePicture")
 def remove_picture():
-    pass
+    return Profile.removePicture(g.user_info)
 
 
 @profile.post("/delete")
