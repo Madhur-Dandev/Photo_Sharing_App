@@ -38,13 +38,9 @@ oauth.init_app(app)
 
 
 def check_token():
-    # print(req.args.get("token"))
-    # print(req.cookies.get("refresh_token"))
     if req.args.get("token") and req.cookies.get("refresh_token"):
         jwt = JWT()
         data = jwt.check_token(req.args.get("token"), req.cookies.get("refresh_token"))
-        # print("hi")
-        # print(data)
         if not data.get("success"):
             return jsonify({"success": False, "message": "Invalid Token"}), 401
         g.user_data = data
@@ -73,6 +69,8 @@ def before_request():
         return check_token()
     elif req.path[:16] == "/api/profile/set":
         return check_user_profile_token()
+    elif req.path[:26] == "/api/profile/updatePicture":
+        return check_token()
 
 
 @app.before_request

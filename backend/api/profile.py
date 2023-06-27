@@ -28,9 +28,12 @@ def update_profile():
     # return {"success": True}
 
 
-@profile.patch("/update_picture")
+@profile.patch("/updatePicture")
 def update_profile_picture():
-    return {"success": True}
+    data = dict(req.form)
+    data.update({"image": req.files.get("image")})
+    # return Profile.setNewPicture(data, g.user_data)
+    return Profile.setNewPicture(data, g.user_data)
 
 
 @profile.patch("/removePicture")

@@ -16,9 +16,20 @@ const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
 
   const [zoomRangeVal, setZoomRangeVal] = useState(0);
 
+  const handleChangeProfilePicture = async () => {
+    console.log({
+      file: {},
+      translateX:
+        translateX.current + posX.current - Math.round(zoomVal.current / 2),
+      translateY:
+        translateY.current + posY.current - Math.round(zoomVal.current / 2),
+      width: imageCropPreview.current.width,
+      height: imageCropPreview.current.height,
+    });
+  };
+
   useEffect(() => {
     if (imageCropPreview.current) {
-      imageCropPreview.current.removeAttribute("style");
       imageCropPreview.current.src = (URL || webkitURL).createObjectURL(
         pictureFile
       );
@@ -53,6 +64,7 @@ const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
             className="done icons"
+            onClick={handleChangeProfilePicture}
           >
             <path
               strokeLinecap="round"

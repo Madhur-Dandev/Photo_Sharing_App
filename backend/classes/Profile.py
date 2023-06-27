@@ -2,8 +2,8 @@ from .JWT import JWT
 from database import db
 from sqlalchemy import text, exc
 from .UserDefinedExc import UserDefinedExc
-from utility.helping_functions import get_file_size
-from os import path, getenv, mkdir
+from utility.helping_functions import get_file_size, edit_profile_picture
+from os import path, getenv, mkdir, remove
 from dotenv import load_dotenv
 from pathlib import Path
 from string import ascii_letters, digits
@@ -29,7 +29,6 @@ class Profile(JWT):
             else:
                 query += f""" users JOIN user_info ON users.user_id = user_info.user_id WHERE users.user_id = {user_id}"""
 
-            # print(query)
             with db.connect() as conn:
                 user_data = conn.execute(text(query)).mappings().first()
                 if user_data:
@@ -39,7 +38,6 @@ class Profile(JWT):
                     if new_token and new_token != "":
                         user_data.update({"access_token": new_token})
 
-                    # print(user_data)
                     return user_data, 200
 
                 raise UserDefinedExc(404, "User Not Found")
@@ -64,7 +62,6 @@ class Profile(JWT):
             user_picture_location = ""
             if self.user_picture:
                 file_size = get_file_size(self.user_picture)
-                # print(file_size)
 
                 if self.user_picture.mimetype.find("image") == -1:
                     raise UserDefinedExc(400, "File must be image")
@@ -114,3 +111,70 @@ class Profile(JWT):
                 "success": False,
                 "message": "Server Error. Please try again later",
             }, 500
+
+    @staticmethod
+    def setNewPicture(data, user_data):
+        try:
+            if not data.get("image"):
+                raise UserDefinedExc(403, "An image is needed to be set.")
+
+            with db.connect() as conn:
+                user_picture = conn.execute(
+                    text(
+                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("id")}"""
+                    )
+                ).first()
+                folder_name = ""
+                if user_picture:
+                    folder_name = user_picture[0].rsplit("/", 2)[1]
+
+                file_size = get_file_size(data.get("image"))
+
+                if data.get("image").mimetype.find("image") == -1:
+                    raise UserDefinedExc(400, "File must be image")
+                elif file_size == 0:
+                    raise UserDefinedExc(400, "Invalid file or file size")
+                elif file_size.get("size") > 500000:
+                    raise UserDefinedExc(400, "Image size is greater than 100kb")
+                else:
+                    if not folder_name:
+                        folder_name = "".join(
+                            [choice(ascii_letters + digits) for _ in range(12)]
+                        )
+                    if not path.exists(
+                        path.join(getenv("USER_PICTURE_FOLDER"), folder_name)
+                    ):
+                        mkdir(path.join(getenv("USER_PICTURE_FOLDER"), folder_name))
+                    user_picture_location = path.join(
+                        getenv("USER_PICTURE_FOLDER"),
+                        folder_name,
+                        f"img.{data.get('image').filename.rsplit('.', 1)[1]}",
+                    )
+
+                    data.get("image").save(user_picture_location)
+                    data.update({"image": user_picture_location})
+                    edit_result = edit_profile_picture(**data)
+
+                    if not edit_result:
+                        if path.exists(user_picture_location):
+                            remove(user_picture_location)
+                            raise UserDefinedExc(500, "Server Error! Try again later.")
+
+                return_dict = {
+                    "success": True,
+                    "message": "Image changed successfully!",
+                }
+
+                if user_data.get("token"):
+                    return_dict.update({"token": user_data.get("token")})
+
+                return return_dict
+
+        except (Exception, exc.SQLAlchemyError) as e:
+            print(e)
+            if isinstance(e, exc.SQLAlchemyError):
+                return {"success": False, "message": "Database Error"}, 500
+            elif isinstance(e, UserDefinedExc):
+                return {"success": False, "message": e.args[0]}, e.code
+            else:
+                return {"success": False, "message": "Server Error"}

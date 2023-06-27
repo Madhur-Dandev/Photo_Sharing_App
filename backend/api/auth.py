@@ -6,8 +6,6 @@ from flask import (
     render_template,
     url_for,
 )
-
-# from classes.auth_class import Login, Signup, JWT, Auth_Changes, Logout
 from classes.JWT import JWT
 from classes.Login import Login
 from classes.Logout import Logout

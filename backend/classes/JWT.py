@@ -1,9 +1,6 @@
 from jwt import encode, decode, exceptions
 from .UserDefinedExc import UserDefinedExc
 from sqlalchemy import text, exc
-
-# from flask import render_template
-# from utility.helping_functions import username_generator
 from database import db
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -13,59 +10,6 @@ load_dotenv()
 
 
 class JWT:
-    # def verify_user(self, token: str):
-    #     try:
-    #         with db.connect() as conn:
-    #             user_data = self.decode_token(token)
-    #             #print(user_data, "19")
-    #             if not user_data.get("success"):
-    #                 raise UserDefinedExc(
-    #                     user_data.get("status_code"), user_data.get("message")
-    #                 )
-    #             existing_user = (
-    #                 conn.execute(
-    #                     text(
-    #                         f"""SELECT * FROM users WHERE user_email = \"{user_data.get("data").get("user_email")}\""""
-    #                     )
-    #                 )
-    #                 .mappings()
-    #                 .first()
-    #             )
-
-    #             if existing_user:
-    #                 raise UserDefinedExc(403, "Session Expired")
-    #             else:
-    #                 conn.execute(
-    #                     text(
-    #                         f"""INSERT INTO users (user_name, user_email, user_password) VALUES ("{user_data.get("data").get("user_name")}", "{user_data.get("data").get("user_email")}", "{user_data.get("data").get("user_password")}")"""
-    #                     )
-    #                 )
-    #                 id = conn.execute(
-    #                     text(f"""SELECT LAST_INSERT_ID() from users""")
-    #                 ).first()[0]
-    #                 conn.execute(
-    #                     text(
-    #                         f"""INSERT INTO restricted_token (token) VALUE ('{token}')"""
-    #                     )
-    #                 )
-    #                 #print(id)
-    #                 return render_template(
-    #                     "signup_profile_setting.html",
-    #                     username=username_generator(
-    #                         user_data.get("data").get("user_name")
-    #                     ),
-    #                     token=self.generate_token(
-    #                         {"id": id}, datetime.utcnow() + timedelta(days=1)
-    #                     ),
-    #                 )
-    #     except (Exception,) as e:
-    #         #print(e, "67")
-    #         if isinstance(e, UserDefinedExc):
-    #             message = e.args[0]
-    #         else:
-    #             message = "Server Error"
-    #         return render_template("signup_message.html", message=message)
-
     def check_token(self, token: str, refresh_token: str):
         try:
             token_data = self.decode_token(token)

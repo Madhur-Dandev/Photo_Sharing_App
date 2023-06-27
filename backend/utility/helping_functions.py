@@ -2,6 +2,8 @@ from database import db
 from sqlalchemy import exc, text
 from random import choice
 from string import digits
+from cv2 import imread, imshow, waitKey, warpAffine, resize, INTER_AREA, imwrite
+import numpy as np
 
 # from re import match
 
@@ -63,34 +65,37 @@ def get_file_size(file: object):
         return {"size": 0}
 
 
-# from string import digits
-# from random import choice
+def edit_profile_picture(
+    image: str, width: int, height: int, translateX: int, translateY: int
+):
+    try:
+        width = int(width)
+        height = int(height)
+        translateX = int(translateX)
+        translateY = int(translateY)
+        init_img = imread(image)
+        resize_img = resize(init_img, (width, height), INTER_AREA)
 
+        t_matrix = np.float32(
+            [
+                [1, 0, translateX],
+                [0, 1, translateY],
+            ]
+        )
 
-# def discard_num(val: str):
-#     try:
-#         int(val)
-#         return False
-#     except ValueError as e:
-#         return True
+        translate_img = warpAffine(resize_img, t_matrix, (width, height))
 
+        lowest_length = height if width >= height else width
 
-# def filter_num(name):
-#     name_split = [word for item in name.split() for word in item.split("_")]
-#     name_split = list(filter(discard_num, name_split))
-#     if len(name_split[0]) >= 16:
-#         name = name_split[0][:16]
-#     elif len(name_split[0]) <= 8 and len(name_split[1]) <= 8:
-#         name = name_split[1] + name_split[0]
-#     else:
-#         name = name_split[0]
-#     # while True:
-#     #     temp = name + "".join([choice(digits) for _ in range(4)])
-#     #     if not any([True if item[0] == temp else False for item in user_names]):
-#     #         name = temp
-#     #         break
+        crop_img = translate_img[0:lowest_length, 0:lowest_length]
 
-#     return name
+        imshow("iamge", crop_img)
+        waitKey(10)
 
+        imwrite(image, crop_img)
 
-# print(filter_num("192 Madhur Dandev"))
+        return True
+
+    except Exception as e:
+        print(e)
+        return False
