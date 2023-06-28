@@ -10,6 +10,9 @@ export default {
       // fontSize: {
       //   op: "1.25rem",
       // },
+      zIndex: {
+        "100": "100"
+      },
       boxShadow: {
         "nav-login": "0px 8px 10px -9px",
         "nav-login-hover": "0px 9px 15px -7px",

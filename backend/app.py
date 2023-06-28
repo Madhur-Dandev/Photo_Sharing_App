@@ -37,6 +37,29 @@ mail.init_app(app)
 oauth.init_app(app)
 
 
+@app.before_request
+def cors_preflight():
+    """
+    Allow only origin : "http://localhost:5500" and "http://localhost:5173" with credential.
+    """
+    if req.method == "OPTIONS":
+        origin = req.headers.get("origin")
+        response = make_response()
+        if origin == "http://localhost:5500" or origin == "http://localhost:5173":
+            response.headers.add(
+                "Access-Control-Allow-Origin",
+                origin,
+            )
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type, Authorization"
+        )
+        response.headers.add(
+            "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        )
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
+
+
 def check_token():
     if req.args.get("token") and req.cookies.get("refresh_token"):
         jwt = JWT()
@@ -64,7 +87,6 @@ def check_user_profile_token():
 
 @app.before_request
 def before_request():
-    # print(req.path[:18])
     if (
         req.path[:18] == "/api/profile/token"
         or req.path[:26] == "/api/profile/updatePicture"
@@ -72,30 +94,6 @@ def before_request():
         return check_token()
     elif req.path[:16] == "/api/profile/set":
         return check_user_profile_token()
-
-
-@app.before_request
-def cors_preflight():
-    """
-    Allow only origin : "http://localhost:5500" and "http://localhost:5173" with credential.
-    """
-    if req.method == "OPTIONS":
-        origin = req.headers.get("origin")
-        response = make_response()
-        if origin == "http://localhost:5500" or "http://localhost:5173":
-            response.headers.add(
-                "Access-Control-Allow-Origin",
-                origin,
-            )
-        response.headers.add(
-            "Access-Control-Allow-Headers", "Content-Type, Authorization"
-        )
-        response.headers.add(
-            "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"
-        )
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        print("")
-        return response
 
 
 @app.route("/", methods=["GET"])

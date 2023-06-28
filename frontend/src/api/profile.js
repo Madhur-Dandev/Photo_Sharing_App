@@ -12,6 +12,20 @@ const getProfileByToken = async (token) => {
     return await resp.json();
 }
 
+const updateProfilePicture = async (token, data) => {
+    try {
+        const resp = await fetch(`http://localhost:5000/api/profile/updatePicture?token=${token}`, {
+            method: "PATCH",
+            credentials: "include",
+            body: data
+        });
+        
+        return await resp.json();
+    } catch (e) {
+        return {success: false, message: "Error to fetch data from server"};
+    }
+}
+
 const removeProfilePicture = async (token) => {
     const resp = await fetch(`http://localhost:5000/api/profile/removePicture?token=${token}`, {
         method: "PATCH",
@@ -21,4 +35,4 @@ const removeProfilePicture = async (token) => {
     return await resp.json();
 }
 
-export {getProfileByUsername, getProfileByToken, removeProfilePicture};
+export {getProfileByUsername, getProfileByToken, updateProfilePicture, removeProfilePicture};

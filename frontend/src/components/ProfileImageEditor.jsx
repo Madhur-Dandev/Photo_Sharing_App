@@ -1,6 +1,10 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
+import { updateProfilePicture } from "../api/profile";
+import { context } from "../context";
 
 const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
+  const globalVal = useContext(context);
+
   let initWidth = useRef(0);
   let initHeight = useRef(0);
   let translateX = useRef(0);
@@ -17,15 +21,40 @@ const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
   const [zoomRangeVal, setZoomRangeVal] = useState(0);
 
   const handleChangeProfilePicture = async () => {
-    console.log({
-      file: {},
-      translateX:
-        translateX.current + posX.current - Math.round(zoomVal.current / 2),
-      translateY:
-        translateY.current + posY.current - Math.round(zoomVal.current / 2),
-      width: imageCropPreview.current.width,
-      height: imageCropPreview.current.height,
-    });
+    const data = new FormData();
+    data.append("image", pictureFile);
+    data.append("width", imageCropPreview.current.width);
+    data.append("height", imageCropPreview.current.height);
+    data.append(
+      "translateX",
+      translateX.current + posX.current - Math.round(zoomVal.current / 2)
+    );
+    data.append(
+      "translateY",
+      translateY.current + posY.current - Math.round(zoomVal.current / 2)
+    );
+
+    const respData = await updateProfilePicture(
+      localStorage.getItem("access_token"),
+      data
+    );
+
+    globalVal.triggerAlert(respData.message);
+
+    if (respData.token) {
+      globalVal.setNewAccessToken(respData.token);
+    }
+    setShowImageEditor(false);
+
+    // console.log({
+    //   file: {},
+    //   translateX:
+    //     translateX.current + posX.current - Math.round(zoomVal.current / 2),
+    //   translateY:
+    //     translateY.current + posY.current - Math.round(zoomVal.current / 2),
+    //   width: imageCropPreview.current.width,
+    //   height: imageCropPreview.current.height,
+    // });
   };
 
   useEffect(() => {

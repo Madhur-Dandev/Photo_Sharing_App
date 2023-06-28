@@ -122,11 +122,11 @@ class Profile(JWT):
             with db.connect() as conn:
                 user_picture = conn.execute(
                     text(
-                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("id")}"""
+                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("user_id")}"""
                     )
                 ).first()
                 folder_name = ""
-                if user_picture:
+                if user_picture[0]:
                     folder_name = user_picture[0].rsplit("/", 2)[1]
 
                 file_size = get_file_size(data.get("image"))
@@ -152,18 +152,24 @@ class Profile(JWT):
                         f"img.{data.get('image').filename.rsplit('.', 1)[1]}",
                     )
 
+                    if path.exists(user_picture[0]):
+                        remove(user_picture[0])
+
                     data.get("image").save(user_picture_location)
                     data.update({"image": user_picture_location})
                     edit_result = edit_profile_picture(**data)
 
                     if not edit_result:
                         if path.exists(user_picture_location):
-                            remove(user_picture_location)
+                            # remove(user_picture_location)
+                            rmtree(
+                                path.join(getenv("USER_PICTURE_FOLDER"), folder_name)
+                            )
                             raise UserDefinedExc(500, "Server Error! Try again later.")
 
                 conn.execute(
                     text(
-                        f"""UPDATE user_info SET user_picture = \"{user_picture_location}\""""
+                        f"""UPDATE user_info SET user_picture = \"{user_picture_location}\" WHERE user_id = {user_data.get("user_id")}"""
                     )
                 )
 
@@ -184,7 +190,7 @@ class Profile(JWT):
             elif isinstance(e, UserDefinedExc):
                 return {"success": False, "message": e.args[0]}, e.code
             else:
-                return {"success": False, "message": "Server Error"}
+                return {"success": False, "message": "Server Error"}, 500
 
     @staticmethod
     def removePicture(user_data):
@@ -196,15 +202,27 @@ class Profile(JWT):
                     )
                 ).first()
 
-                if not user_picture:
+                if not user_picture[0]:
                     raise UserDefinedExc(403, "User has no picture to remove!")
 
                 if path.exists(user_picture[0]):
                     rmtree(user_picture[0].rsplit("/", 2)[1])
 
-                    conn.execute(text(f"""UPDATE user_info SET user_picture = ''"""))
+                    conn.execute(
+                        text(
+                            f"""UPDATE user_info SET user_picture = '' WHERE user_id = {user_data.get("user_id")}"""
+                        )
+                    )
 
-                    return {"success": True, "message": "Picture Removed!"}, 200
+                    return_dict = {
+                        "success": True,
+                        "message": "Picture Removed!",
+                    }
+
+                    if user_data.get("token"):
+                        return_dict.update({"token": user_data.get("token")})
+
+                    return return_dict, 200
 
                 raise UserDefinedExc(403, "User has no picture to remove!")
 

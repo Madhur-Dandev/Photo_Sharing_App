@@ -69,10 +69,10 @@ def edit_profile_picture(
     image: str, width: int, height: int, translateX: int, translateY: int
 ):
     try:
-        # width = int(width)
-        # height = int(height)
-        # translateX = int(translateX)
-        # translateY = int(translateY)
+        width = int(width)
+        height = int(height)
+        translateX = float(translateX)
+        translateY = float(translateY)
         init_img = imread(image)
         resize_img = resize(init_img, (width, height), INTER_AREA)
 
@@ -94,5 +94,6 @@ def edit_profile_picture(
         return True
 
     except Exception as e:
+        print("hi")
         print(e)
         return False

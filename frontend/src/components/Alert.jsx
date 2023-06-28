@@ -61,7 +61,7 @@ const Alert = () => {
 
   return (
     <div
-      className="absolute -top-20 left-3 transition-all duration-300 z-50"
+      className="absolute -top-20 left-3 transition-all duration-300 z-100"
       ref={alertDiv}
       onTransitionEnd={alertTextAnim}
     >

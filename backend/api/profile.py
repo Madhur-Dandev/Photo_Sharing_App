@@ -30,6 +30,8 @@ def update_profile():
 
 @profile.patch("/updatePicture")
 def update_profile_picture():
+    print(req.form)
+    print(req.files)
     data = dict(req.form)
     data.update({"image": req.files.get("image")})
     return Profile.setNewPicture(data, g.user_data)
