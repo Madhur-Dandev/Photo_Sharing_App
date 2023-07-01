@@ -28,6 +28,15 @@ def update_profile():
     # return {"success": True}
 
 
+@profile.put("/updateProfile")
+def updateProfile():
+    name = req.json.get("name")
+    username = req.json.get("user_name")
+    bio = req.json.get("bio")
+
+    return Profile.changeInfo(name, username, bio, g.user_data)
+
+
 @profile.patch("/updatePicture")
 def update_profile_picture():
     print(req.form)
@@ -39,7 +48,7 @@ def update_profile_picture():
 
 @profile.patch("/removePicture")
 def remove_picture():
-    return Profile.removePicture(g.user_info)
+    return Profile.removePicture(g.user_data)
 
 
 @profile.post("/delete")

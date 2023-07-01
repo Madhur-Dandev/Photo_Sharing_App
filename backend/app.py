@@ -57,6 +57,7 @@ def cors_preflight():
             "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         )
         response.headers["Access-Control-Allow-Credentials"] = "true"
+        print(response)
         return response
 
 
@@ -77,7 +78,6 @@ def check_user_profile_token():
 
     jwt = JWT()
     data = jwt.decode_token(req.args.get("token"))
-    print(data)
     if not data.get("success"):
         return {"success": False, "message": data.get("message")}, data.get(
             "status_code"
@@ -91,6 +91,7 @@ def before_request():
         req.path[:18] == "/api/profile/token"
         or req.path[:26] == "/api/profile/updatePicture"
         or req.path[:26] == "/api/profile/removePicture"
+        or req.path[:26] == "/api/profile/updateProfile"
     ):
         return check_token()
     elif req.path[:16] == "/api/profile/set":

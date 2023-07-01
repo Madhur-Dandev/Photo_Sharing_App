@@ -10,11 +10,13 @@ from pathlib import Path
 from string import ascii_letters, digits
 from random import choice
 from flask import request as req
+from re import match
+from . import Main
 
 load_dotenv()
 
 
-class Profile(JWT):
+class Profile(JWT, Main):
     def __init__(self, user_data: dict) -> None:
         super().__init__()
         self.user_name = user_data.get("user_name")
@@ -135,6 +137,7 @@ class Profile(JWT):
                     )
                 ).first()
                 folder_name = ""
+                ext = data.get("image").filename.rsplit(".", 1)[1]
                 if user_picture[0]:
                     folder_name = user_picture[0].rsplit("/", 2)[1]
 
@@ -158,7 +161,7 @@ class Profile(JWT):
                     user_picture_location = path.join(
                         getenv("USER_PICTURE_FOLDER"),
                         folder_name,
-                        f"img.{data.get('image').filename.rsplit('.', 1)[1]}",
+                        f"img.{ext}",
                     )
 
                     if path.exists(user_picture[0]):
@@ -185,6 +188,7 @@ class Profile(JWT):
                 return_dict = {
                     "success": True,
                     "message": "Image changed successfully!",
+                    "user_picture": f"http://localhost:5000/api/photos/getPhoto/{folder_name}/img.{ext}?type=profile",
                 }
 
                 if user_data.get("token"):
@@ -207,7 +211,7 @@ class Profile(JWT):
             with db.connect() as conn:
                 user_picture = conn.execute(
                     text(
-                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("id")}"""
+                        f"""SELECT user_picture FROM user_info WHERE user_id = {user_data.get("user_id")}"""
                     )
                 ).first()
 
@@ -215,7 +219,8 @@ class Profile(JWT):
                     raise UserDefinedExc(403, "User has no picture to remove!")
 
                 if path.exists(user_picture[0]):
-                    rmtree(user_picture[0].rsplit("/", 2)[1])
+                    print(user_picture[0])
+                    rmtree(user_picture[0].rsplit("/", 1)[0])
 
                     conn.execute(
                         text(
@@ -243,3 +248,33 @@ class Profile(JWT):
                 return {"success": False, "message": e.args[0]}, e.code
             else:
                 return {"success": False, "message": "Server Error"}
+
+    @staticmethod
+    def changeInfo(name: str, username: str, bio: str, user_data: dict):
+        try:
+            with db.connect() as conn:
+                if not Main().verify("name", name):
+                    raise UserDefinedExc(400, "Name is not valid!")
+
+                if not match(r"^[\w\.]{6,20}$", username):
+                    raise UserDefinedExc(400, "Username is not valid!")
+
+                conn.execute(
+                    text(
+                        f"""UPDATE user_info JOIN users ON users.user_id = user_info.user_id SET user_info.user_name = '{username}', users.user_name = '{name}', user_bio = '{bio}' WHERE user_info.user_id = {user_data.get("user_id")}"""
+                    )
+                )
+                return {"success": True, "message": "Profile Updated!"}, 200
+        except (exc.IntegrityError, exc.SQLAlchemyError, Exception) as e:
+            print(e)
+            if isinstance(e, exc.IntegrityError):
+                return {"success": False, "message": "Username already exists"}, 400
+            elif isinstance(e, exc.SQLAlchemyError):
+                return {"success": False, "message": "Database Error"}, 500
+            elif isinstance(e, UserDefinedExc):
+                return {"success": False, "message": e.args[0]}, e.code
+            else:
+                return {
+                    "success": False,
+                    "message": "Server Error! Try again later",
+                }, 500

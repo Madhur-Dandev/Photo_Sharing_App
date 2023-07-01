@@ -348,9 +348,8 @@ const Profile = () => {
                     setShowEditorModal={setShowEditorModal}
                     setOpenImageOpt={setOpenImageOpt}
                     imageUrl={userInfo.user_picture}
-                    username={userInfo.user_name}
-                    name={userInfo.name}
-                    userbio={userInfo.bio}
+                    userInfo={userInfo}
+                    setUserInfo={setUserInfo}
                 />
             )}
         </>

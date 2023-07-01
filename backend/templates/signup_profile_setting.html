@@ -1,86 +1,88 @@
 {% extends 'base.html' %} {% block title %}UShare - Signup{% endblock title %}
 {% block style %}
 <link
-  rel="stylesheet"
-  href="{{url_for('static', filename='css/signup_profile_setting.css')}}"
+    rel="stylesheet"
+    href="{{url_for('static', filename='css/signup_profile_setting.css')}}"
 />
 {% endblock style %} {% block content %}
 <div class="container">
-  <div class="message">
-    <p class="msg-text"></p>
-    <span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 512 512"
-        class="msg-cross"
-        onclick="closeAlert(this)"
-      >
-        <path
-          fill="whitesmoke"
-          d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+    <div class="message">
+        <p class="msg-text"></p>
+        <span>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                class="msg-cross"
+                onclick="closeAlert(this)"
+            >
+                <path
+                    fill="whitesmoke"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                />
+            </svg>
+        </span>
+    </div>
+    <div class="username-form">
+        <h1 class="heading" onclick="removePreviewImage">
+            Complete Your Signup
+        </h1>
+        <small class="leaving-note"
+            >NOTE - If your leave the page without submitting then your username
+            will be decided by server</small
+        >
+        <div class="profile-image-container"></div>
+        <h4 style="text-align: center; margin-bottom: 10px">
+            Your Profile Picture
+        </h4>
+        <input type="file" name="user-image" id="user-image" hidden />
+        <input
+            type="text"
+            name="username"
+            id="username"
+            class="form-elem name-input"
+            maxlength="15"
+            value="{{username}}"
         />
-      </svg>
-    </span>
-  </div>
-  <div class="username-form">
-    <h1 class="heading" onclick="removePreviewImage">Complete Your Signup</h1>
-    <small class="leaving-note"
-      >NOTE - If your leave the page without submitting then your username will
-      be decided by server</small
-    >
-    <div class="profile-image-container"></div>
-    <h4 style="text-align: center; margin-bottom: 10px">
-      Your Profile Picture
-    </h4>
-    <input type="file" name="user-image" id="user-image" hidden />
-    <input
-      type="text"
-      name="username"
-      id="username"
-      class="form-elem name-input"
-      maxlength="15"
-      value="{{username}}"
-    />
-    <button class="btn form-elem" onclick="submitForm()">Confirm</button>
-  </div>
+        <button class="btn form-elem" onclick="submitForm()">Confirm</button>
+    </div>
 </div>
 <script>
-  const username = document.querySelector("#username");
-  const msgContainer = document.querySelector(".message");
-  const msgText = document.querySelector(".msg-text");
-  const pImgContainer = document.querySelector(".profile-image-container");
-  const userImage = document.querySelector("#user-image");
-  const token = "{{token}}";
-  const defaultUserName = "{{username}}";
-  let selectedImage = {};
+    const username = document.querySelector("#username");
+    const msgContainer = document.querySelector(".message");
+    const msgText = document.querySelector(".msg-text");
+    const pImgContainer = document.querySelector(".profile-image-container");
+    const userImage = document.querySelector("#user-image");
+    const token = "{{token}}";
+    const defaultUserName = "{{username}}";
+    let selectedImage = {};
 
-  pImgContainer.addEventListener("click", (e) => {
-    e.preventDefault();
-    if (
-      e.target.classList.contains("profile-image-container") ||
-      e.target.classList.contains("camera")
-    ) {
-      userImage.click();
+    pImgContainer.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (
+            e.target.classList.contains("profile-image-container") ||
+            e.target.classList.contains("camera")
+        ) {
+            userImage.click();
+        }
+    });
+
+    userImage.addEventListener("change", (e) => {
+        e.preventDefault();
+        selectedImage = e.target.files[0];
+        checkImage();
+    });
+
+    function alertMessage(msg, type) {
+        if ((type = "danger")) msgContainer.style.backgroundColor = "#ff897b";
+        else msgContainer.style.backgroundColor = "#00bb3e";
+        msgText.innerText = msg;
+        msgContainer.style.display = "flex";
     }
-  });
 
-  userImage.addEventListener("change", (e) => {
-    e.preventDefault();
-    selectedImage = e.target.files[0];
-    checkImage();
-  });
-
-  function alertMessage(msg, type) {
-    if ((type = "danger")) msgContainer.style.backgroundColor = "#ff897b";
-    else msgContainer.style.backgroundColor = "#00bb3e";
-    msgText.innerText = msg;
-    msgContainer.style.display = "flex";
-  }
-
-  function checkImage() {
-    console.log(selectedImage);
-    if (!selectedImage.name) {
-      pImgContainer.innerHTML = `<svg
+    function checkImage() {
+        console.log(selectedImage);
+        if (!selectedImage.name) {
+            pImgContainer.innerHTML = `<svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -100,41 +102,41 @@
           d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"
         />
       </svg>`;
-      return;
-    }
+            return;
+        }
 
-    if (!selectedImage.type.includes("image")) {
-      alertMessage("File must be image", "danger");
-      return;
-    }
+        if (!selectedImage.type.includes("image")) {
+            alertMessage("File must be image", "danger");
+            return;
+        }
 
-    if (!(selectedImage.size < 102400)) {
-      alertMessage("Image size must be less than 100kb", "danger");
-      return;
-    }
+        if (!(selectedImage.size < 102400)) {
+            alertMessage("Image size must be less than 100kb", "danger");
+            return;
+        }
 
-    window.addEventListener("click", (e) => {
-      if (e.target.classList.contains("profile-image-dismiss")) {
-        selectedImage = {};
-        checkImage();
-      }
-    });
+        window.addEventListener("click", (e) => {
+            if (e.target.classList.contains("profile-image-dismiss")) {
+                selectedImage = {};
+                checkImage();
+            }
+        });
 
-    const previewImgContainer = document.createElement("div");
-    previewImgContainer.style.height = "inherit";
-    previewImgContainer.style.width = "inherit";
-    previewImgContainer.style.position = "relative";
-    previewImgContainer.style.overflow = "hidden";
-    previewImgContainer.style.borderRadius = "50%";
-    const previewImg = document.createElement("img");
-    previewImg.src = (window.URL ? URL : webkitURL).createObjectURL(
-      selectedImage
-    );
-    previewImg.classList = "profile-image";
-    pImgContainer.innerHTML = "";
-    previewImgContainer.append(previewImg);
-    pImgContainer.append(previewImgContainer);
-    pImgContainer.innerHTML += ` <svg
+        const previewImgContainer = document.createElement("div");
+        previewImgContainer.style.height = "inherit";
+        previewImgContainer.style.width = "inherit";
+        previewImgContainer.style.position = "relative";
+        previewImgContainer.style.overflow = "hidden";
+        previewImgContainer.style.borderRadius = "50%";
+        const previewImg = document.createElement("img");
+        previewImg.src = (window.URL ? URL : webkitURL).createObjectURL(
+            selectedImage
+        );
+        previewImg.classList = "profile-image";
+        pImgContainer.innerHTML = "";
+        previewImgContainer.append(previewImg);
+        pImgContainer.append(previewImgContainer);
+        pImgContainer.innerHTML += ` <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -149,53 +151,53 @@
         d="M6 18L18 6M6 6l12 12"
       />
     </svg>`;
-  }
-
-  checkImage();
-
-  function closeAlert(e) {
-    e.parentElement.parentElement.style.display = "none";
-  }
-
-  async function fetchUsernameReq(username = defaultUserName) {
-    const user_data = new FormData();
-    user_data.append("user_name", username);
-    if (selectedImage.size) {
-      user_data.append("user_picture", selectedImage);
     }
 
-    const res = await fetch(
-      `http://localhost:5000/api/profile/set?token=${token}`,
-      {
-        method: "POST",
-        body: user_data,
-      }
-    );
-    const data = await res.json();
-    alertMessage(data.message, data.success ? "success" : "danger");
-    window.location.url = "http://localhost:5173/auth/login";
-  }
+    checkImage();
 
-  function submitForm() {
-    if (/^[\w\.]{6,20}$/g.test(username.value)) {
-      fetchUsernameReq(username.value);
-    } else {
-      alertMessage(
-        "Username should only contain alphanumeric characters and length min 5 and max 15",
-        "danger"
-      );
+    function closeAlert(e) {
+        e.parentElement.parentElement.style.display = "none";
     }
-  }
 
-  document.documentElement.children[1].style.height = `${window.innerHeight}px`;
-  window.addEventListener("beforeunload", (event) => {
-    event.preventDefault();
+    async function fetchUsernameReq(username = defaultUserName) {
+        const user_data = new FormData();
+        user_data.append("user_name", username);
+        if (selectedImage.size) {
+            user_data.append("user_picture", selectedImage);
+        }
 
-    if (/^[\w\.]{6,15}$/g.test(username.value)) {
-      fetchUsernameReq(username.value);
-    } else {
-      fetchUsernameReq();
+        const res = await fetch(
+            `http://localhost:5000/api/profile/set?token=${token}`,
+            {
+                method: "POST",
+                body: user_data,
+            }
+        );
+        const data = await res.json();
+        alertMessage(data.message, data.success ? "success" : "danger");
+        window.location.url = "http://localhost:5173/auth/login";
     }
-  });
+
+    function submitForm() {
+        if (/^[\w\.]{6,20}$/g.test(username.value)) {
+            fetchUsernameReq(username.value);
+        } else {
+            alertMessage(
+                "Username should only contain alphanumeric characters and length min 5 and max 15",
+                "danger"
+            );
+        }
+    }
+
+    document.documentElement.children[1].style.height = `${window.innerHeight}px`;
+    window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+
+        if (/^[\w\.]{6,20}$/g.test(username.value)) {
+            fetchUsernameReq(username.value);
+        } else {
+            fetchUsernameReq();
+        }
+    });
 </script>
 {% endblock content%}

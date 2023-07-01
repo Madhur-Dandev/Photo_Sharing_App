@@ -69,10 +69,12 @@ def edit_profile_picture(
     image: str, width: int, height: int, translateX: int, translateY: int
 ):
     try:
-        width = int(width)
-        height = int(height)
+        width = int(width) + 8
+        height = int(height) + 8
         translateX = float(translateX)
         translateY = float(translateY)
+
+        print(width, height, translateX, translateY)
 
         init_img = imread(image)
         resize_img = resize(init_img, (width, height), INTER_AREA)

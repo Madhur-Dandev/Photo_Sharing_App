@@ -23,7 +23,6 @@ const Global = ({ children }) => {
          * This function is use to trigger the alert from anywhere in the application.
          * just use "context_name.triggerAlert(message_body);"
          */
-        console.log(msg);
         setAlertMsg(msg);
         setShowAlert(false); // it will clear the recent alert that still popped up.
         setTimeout(() => {
