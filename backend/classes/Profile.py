@@ -34,6 +34,15 @@ class Profile(JWT):
                 user_data = conn.execute(text(query)).mappings().first()
                 if user_data:
                     user_data = dict(user_data)
+                    if user_data.get("user_picture"):
+                        foldername, filename = user_data.get("user_picture").rsplit(
+                            "/", 2
+                        )[1:]
+                        user_data.update(
+                            {
+                                "user_picture": f"{req.root_url}/api/photos/getPhoto/{foldername}/{filename}?type=profile"
+                            }
+                        )
                     user_data.update({"success": True})
 
                     if new_token and new_token != "":

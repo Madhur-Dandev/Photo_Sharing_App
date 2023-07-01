@@ -90,6 +90,7 @@ def before_request():
     if (
         req.path[:18] == "/api/profile/token"
         or req.path[:26] == "/api/profile/updatePicture"
+        or req.path[:26] == "/api/profile/removePicture"
     ):
         return check_token()
     elif req.path[:16] == "/api/profile/set":

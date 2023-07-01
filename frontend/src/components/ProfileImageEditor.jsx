@@ -2,7 +2,12 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { updateProfilePicture } from "../api/profile";
 import { context } from "../context";
 
-const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
+const ProfileImageEditor = ({
+  setShowImageEditor,
+  pictureFile,
+  userInfo,
+  setUserInfo,
+}) => {
   const globalVal = useContext(context);
 
   let initWidth = useRef(0);
@@ -21,6 +26,8 @@ const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
   const [zoomRangeVal, setZoomRangeVal] = useState(0);
 
   const handleChangeProfilePicture = async () => {
+    console.log(imageCropPreview.current.getBoundingClientRect());
+
     const data = new FormData();
     data.append("image", pictureFile);
     data.append("width", imageCropPreview.current.width);
@@ -44,17 +51,25 @@ const ProfileImageEditor = ({ setShowImageEditor, pictureFile }) => {
     if (respData.token) {
       globalVal.setNewAccessToken(respData.token);
     }
+
+    if (respData.success) {
+      setUserInfo({
+        ...userInfo,
+        user_picture: (URL || webkitURL).createObjectURL(pictureFile),
+      });
+    }
+
     setShowImageEditor(false);
 
-    // console.log({
-    //   file: {},
-    //   translateX:
-    //     translateX.current + posX.current - Math.round(zoomVal.current / 2),
-    //   translateY:
-    //     translateY.current + posY.current - Math.round(zoomVal.current / 2),
-    //   width: imageCropPreview.current.width,
-    //   height: imageCropPreview.current.height,
-    // });
+    console.log({
+      file: {},
+      translateX:
+        translateX.current + posX.current - Math.round(zoomVal.current / 2),
+      translateY:
+        translateY.current + posY.current - Math.round(zoomVal.current / 2),
+      width: imageCropPreview.current.width,
+      height: imageCropPreview.current.height,
+    });
   };
 
   useEffect(() => {

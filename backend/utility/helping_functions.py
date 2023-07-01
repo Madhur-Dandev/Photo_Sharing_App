@@ -2,7 +2,7 @@ from database import db
 from sqlalchemy import exc, text
 from random import choice
 from string import digits
-from cv2 import imread, imshow, waitKey, warpAffine, resize, INTER_AREA, imwrite
+from cv2 import imread, warpAffine, resize, INTER_AREA, imwrite
 import numpy as np
 
 # from re import match
@@ -73,6 +73,7 @@ def edit_profile_picture(
         height = int(height)
         translateX = float(translateX)
         translateY = float(translateY)
+
         init_img = imread(image)
         resize_img = resize(init_img, (width, height), INTER_AREA)
 
@@ -85,15 +86,12 @@ def edit_profile_picture(
 
         translate_img = warpAffine(resize_img, t_matrix, (width, height))
 
-        lowest_length = height if width >= height else width
-
-        crop_img = translate_img[0:lowest_length, 0:lowest_length]
+        crop_img = translate_img[0:300, 0:300]
 
         imwrite(image, crop_img)
 
         return True
 
     except Exception as e:
-        print("hi")
         print(e)
         return False

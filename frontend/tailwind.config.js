@@ -11,7 +11,10 @@ export default {
       //   op: "1.25rem",
       // },
       zIndex: {
-        "100": "100"
+        "100": "100",
+      },
+      width: {
+        "425": "425px",
       },
       boxShadow: {
         "nav-login": "0px 8px 10px -9px",

@@ -24,7 +24,7 @@ class JWT:
                         .mappings()
                         .first()
                     )
-                    print(existing_user)
+                    # print(existing_user)
                     if existing_user:
                         return {
                             "user_id": token_data.get("data").get("id"),
