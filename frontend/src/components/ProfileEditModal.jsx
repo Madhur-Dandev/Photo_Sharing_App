@@ -2,6 +2,8 @@ import { useEffect, useContext, useState, useRef } from "react";
 import { context } from "../context";
 import { updateProfileInfo } from "../api/profile";
 import Loading from "./Loading";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const ProfileEditModal = ({
     setOpenImageOpt,
@@ -112,7 +114,7 @@ const ProfileEditModal = ({
                     onInput={(e) => setNameDisp(e.target.value)}
                     ref={nameField}
                 />
-                <textarea
+                {/* <textarea
                     name="bio"
                     className="w-full h-full px-5 py-1 text-zinc-800 resize-none text-lg border-none rounded-md focus:outline-none"
                     id="bio"
@@ -122,7 +124,17 @@ const ProfileEditModal = ({
                     value={bio}
                     onInput={(e) => setBio(e.target.value)}
                     ref={bioField}
-                ></textarea>
+                ></textarea> */}
+                <ReactQuill
+                    modules={{
+                        toolbar: [
+                            ["bold", "italic", "strike", "underline", "link"],
+                        ],
+                    }}
+                    value={bio}
+                    onChange={(value) => setBio(value)}
+                    className="w-full h-full resize-none text-lg border-none rounded-md focus:outline-none"
+                />
                 <button
                     className="w-full h-full px-5 py-1 resize-none text-lg border-none rounded-md focus:outline-none bg-slate-200 text-zinc-800 cursor-pointer font-extrabold transition-all duration-200 hover:bg-zinc-800 hover:text-slate-200"
                     onClick={handleUpdateProfle}

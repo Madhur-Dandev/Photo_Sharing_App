@@ -259,9 +259,21 @@ const Profile = () => {
                                 </div>
                             </div>
                             <div>
-                                <p className="user-bio sm:w-96 m-auto md:m-0">
-                                    {userInfo.user_bio ? userInfo.user_bio : ""}
-                                </p>
+                                <div
+                                    className="user-bio sm:w-96 m-auto md:m-0"
+                                    dangerouslySetInnerHTML={{
+                                        __html: userInfo.user_bio,
+                                    }}
+                                >
+                                    {/* {userInfo.user_bio ? userInfo.user_bio : ""} */}
+                                    {/* {userInfo.user_bio
+                                        ? userInfo.user_bio
+                                              .split("\n")
+                                              .map((elem, index) => (
+                                                  <p key={index}>{elem}</p>
+                                              ))
+                                        : ""} */}
+                                </div>
                             </div>
                             <div className="flex flex-col lg:flex-row justify-between lg:items-center">
                                 <div className="text-base follow-text flex gap-2 sm:gap-5 justify-center md:justify-normal items-center border-t border-b md:border-none border-stone-100 py-2 md:py-0">
